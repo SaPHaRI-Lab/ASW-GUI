@@ -27,6 +27,9 @@ class MainGUI(ctk.CTk):
         super().__init__()
         self.title("Animation Maker")
         self.geometry("1200x800")
+        self.wm_attributes('-transparentcolor','#ff8313')
+        ctk.set_default_color_theme("dark-blue.json")
+
 
         # Initialize variables
         self.original_images = {}
@@ -71,8 +74,11 @@ class MainGUI(ctk.CTk):
         self.participant_menu.pack(pady=(10, 0), fill=tk.X, padx=20)  # Added padding and fill X
 
         # Main image
-        self.main_image = ctk.CTkLabel(self.main_frame, text="Main Image", width=500, height=500, bg_color="lightgray")
-        self.main_image.pack(pady=(10, 10))  # Added padding
+        self.main_image_c = tk.Canvas(self.main_frame)
+        self.main_image_c.pack(expand=True, fill="both")
+        self.main_image = ImageTk.PhotoImage(Image.open("../ASW-GUI/actuationmethods/jacket.png"))
+        self.main_image_c.imgref = self.main_image
+        self.main_image_c.create_image(0,0, image = self.main_image, anchor = tk.NW)
 
         # Movement options frame & title
         self.movement_frame = ctk.CTkFrame(self.main_frame)
@@ -81,8 +87,7 @@ class MainGUI(ctk.CTk):
         self.movement_title = ctk.CTkLabel(self.movement_frame, text="Movement", font=("Arial", 16))
         self.movement_title.pack()
 
-        # Create a StringVar to manage the selection
-        self.movement_var = tk.StringVar()
+        self.movement_var = tk.StringVar() # Movement: Create a StringVar to manage the selection
 
         # Movement options
         self.movement_options = [
@@ -91,6 +96,8 @@ class MainGUI(ctk.CTk):
         ]
         for option in self.movement_options:
             option.pack(fill=tk.X, pady=2)
+
+        self.movement_frame.pack_forget()
 
         # TextBox (Entry) for "Other" option
         self.other_textbox = ctk.CTkEntry(self.movement_frame, placeholder_text="Enter custom movement...")
@@ -161,15 +168,15 @@ class MainGUI(ctk.CTk):
         img = ctk.CTkImage(pre_img)
 
         # Create the copy label
-        img_copy_label = ctk.CTkLabel(self.left_frame, image=img, text=original_label.cget("text"), compound=tk.BOTTOM)
+        img_copy_label = ctk.CTkLabel(self.main_frame, image=img, text=original_label.cget("text"), compound=tk.BOTTOM, bg_color='white')
         img_copy_label.image = img  # Keep a reference to prevent garbage collection
-        img_copy_label.place(x=original_label.winfo_x() + 10, y=original_label.winfo_y()+ 10)  # Position copy at the original position
+        #img_copy_label.place()  # Position copy at the original position
         img_copy_label.pack()
         
 
         #Add to drag manager
         drag = dragManager()
-        drag.add_widget(self, img_copy_label)
+        drag.add_widget(self.main_frame, img_copy_label)
 
         # Store the copy in a dictionary
         self.image_copies[img_copy_label._label] = img_file
@@ -205,7 +212,7 @@ class MainGUI(ctk.CTk):
         
 
         
-
+    #-----RIGHT FRAME UPDATE------
     def update_right_frame(self, img_file):
         # Update color and speed based on selected image
         color = self.image_colors[img_file]
@@ -226,11 +233,13 @@ class MainGUI(ctk.CTk):
         self.color_wheel_label.pack(pady=(10, 5))
         self.speed_label.pack(pady=(10, 5))
         self.speed_slider.pack(pady=(0, 10))
+        self.movement_frame.pack()
 
     def hide_right_frame_components(self):
         self.color_wheel_label.pack_forget()
         self.speed_label.pack_forget()
         self.speed_slider.pack_forget()
+        self.movement_frame.pack_forget()
 
     def on_movement_option_selected(self):
         print("move opt selected")
