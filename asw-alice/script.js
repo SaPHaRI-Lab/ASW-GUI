@@ -41,10 +41,12 @@ function drop(e) {
     const clonedItem = item.cloneNode(true);
     clonedItem.classList.add('dropped-item');
     clonedItem.style.zIndex = '10';
-    const xVal = e.clientX-clonedItem.offsetWidth/2;
-    const yVal = e.clientY-clonedItem.offsetHeight/2;
-    clonedItem.style.left = `${xVal}px`;
-    clonedItem.style.top = `${yVal}px`;
+    clonedItem.onload = () => {
+        const xVal = e.clientX-clonedItem.offsetWidth/2;
+        const yVal = e.clientY-clonedItem.offsetHeight/2;
+        clonedItem.style.left = `${xVal}px`;
+        clonedItem.style.top = `${yVal}px`;
+    }
     document.body.appendChild(clonedItem);
     if (currView == "front") {
         frontItems.push(clonedItem);
@@ -56,7 +58,7 @@ function drop(e) {
         document.getElementById("lightind-movement").style.display = 'none';
         document.getElementById("lights-movement").style.display = 'none';
         document.getElementById("display-movement").style.display = 'none'
-        document.getElementById("water-movement").style.display = 'none';
+        document.getElementById("vibrations-movement").style.display = 'none';
         document.getElementById("noise-movement").style.display = 'none';
         document.getElementById("other-movement").style.display = 'none';
     } else if (clonedItem.id == document.getElementById("light-ind").id) {
@@ -64,7 +66,7 @@ function drop(e) {
         document.getElementById("fur-movement").style.display = 'none';
         document.getElementById("lights-movement").style.display = 'none';
         document.getElementById("display-movement").style.display = 'none'
-        document.getElementById("water-movement").style.display = 'none';
+        document.getElementById("vibrations-movement").style.display = 'none';
         document.getElementById("noise-movement").style.display = 'none';
         document.getElementById("other-movement").style.display = 'none';
     } else if (clonedItem.id == document.getElementById("light-strip").id) {
@@ -72,7 +74,7 @@ function drop(e) {
         document.getElementById("lightind-movement").style.display = 'none';
         document.getElementById("fur-movement").style.display = 'none';
         document.getElementById("display-movement").style.display = 'none'
-        document.getElementById("water-movement").style.display = 'none';
+        document.getElementById("vibrations-movement").style.display = 'none';
         document.getElementById("noise-movement").style.display = 'none';
         document.getElementById("other-movement").style.display = 'none';
     } else if (clonedItem.id == document.getElementById("display").id) {
@@ -80,11 +82,11 @@ function drop(e) {
         document.getElementById("lightind-movement").style.display = 'none';
         document.getElementById("lights-movement").style.display = 'none';
         document.getElementById("fur-movement").style.display = 'none'
-        document.getElementById("water-movement").style.display = 'none';
+        document.getElementById("vibrations-movement").style.display = 'none';
         document.getElementById("noise-movement").style.display = 'none';
         document.getElementById("other-movement").style.display = 'none';
-    } else if (clonedItem.id == document.getElementById("water-squirter").id) {
-        document.getElementById("water-movement").style.display = 'block';
+    } else if (clonedItem.id == document.getElementById("vibrations").id) {
+        document.getElementById("vibrations-movement").style.display = 'block';
         document.getElementById("lightind-movement").style.display = 'none';
         document.getElementById("lights-movement").style.display = 'none';
         document.getElementById("display-movement").style.display = 'none'
@@ -96,7 +98,7 @@ function drop(e) {
         document.getElementById("lightind-movement").style.display = 'none';
         document.getElementById("lights-movement").style.display = 'none';
         document.getElementById("display-movement").style.display = 'none'
-        document.getElementById("water-movement").style.display = 'none';
+        document.getElementById("vibrations-movement").style.display = 'none';
         document.getElementById("fur-movement").style.display = 'none';
         document.getElementById("other-movement").style.display = 'none';
     } else if (clonedItem.id == document.getElementById("other").id) {
@@ -104,18 +106,20 @@ function drop(e) {
         document.getElementById("lightind-movement").style.display = 'none';
         document.getElementById("lights-movement").style.display = 'none';
         document.getElementById("display-movement").style.display = 'none'
-        document.getElementById("water-movement").style.display = 'none';
+        document.getElementById("vibrations-movement").style.display = 'none';
         document.getElementById("noise-movement").style.display = 'none';
         document.getElementById("fur-movement").style.display = 'none';
     } 
 }
 
-var slider = document.getElementById("speed-range");
-var output = document.getElementById("value");
-output.innerHTML = slider.value;
-slider.oninput = function() {
-  output.innerHTML = this.value;
-}
+document.addEventListener('DOMContentLoaded', function() {
+    var slider = document.getElementById("speed-range");
+    var output = document.getElementById("value");
+    output.innerHTML = slider.value;
+    slider.oninput = function() {
+        output.innerHTML = this.value;
+    }
+});
 
 //test
 function saveFile() {
@@ -133,9 +137,3 @@ function saveFile() {
     link.click();
     document.body.removeChild(link);
 }
-
-/*const colorWheel = document.getElementById('color-select');
-const output = document.getElementById('output');
-colorWheel.addEventListener('click', function(event) {
-    output.style.backgroundColor = white;
-});*/

@@ -71,6 +71,16 @@ h1 {
   bottom: 0;
 }
 
+::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 7px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: gray;
+}
+
 .dropped-item {
   z-index: 3;
   position: absolute;
