@@ -1,3 +1,4 @@
+//add items to front or back & switch views
 var frontItems = [];
 var backItems = [];
 var currView = "front";
@@ -27,98 +28,137 @@ function switchView() {
     }
 }
 
-const options = document.querySelectorAll('.option');
+//drag and drop functionality
 function dragOver(e) {
     e.preventDefault();
 }
 function drag(e) {
     e.dataTransfer.setData("text", e.target.id);
-}   
+}
 function drop(e) {
     e.preventDefault();
     var data = e.dataTransfer.getData("text");
     const item = document.getElementById(data);
     const clonedItem = item.cloneNode(true);
-    clonedItem.classList.add('dropped-item');
+    const uniqueId = `${data}-${Date.now()}`;
+    clonedItem.id = uniqueId;
+    clonedItem.className = item.className + ' dropped-item';
+    clonedItem.style.cssText = item.style.cssText;
+    const dropArea = document.getElementById('jacketbox');
+    const rect = dropArea.getBoundingClientRect();
+    const offsetX = -345;
+    const offsetY = -30;
+    const xVal = e.clientX-rect.left-offsetX;
+    const yVal = e.clientY-rect.top-offsetY;
+    clonedItem.style.position = 'absolute';
+    clonedItem.style.left = `${xVal}px`;
+    clonedItem.style.top = `${yVal}px`;
     clonedItem.style.zIndex = '10';
-    clonedItem.onload = () => {
-        const xVal = e.clientX-clonedItem.offsetWidth/2;
-        const yVal = e.clientY-clonedItem.offsetHeight/2;
-        clonedItem.style.left = `${xVal}px`;
-        clonedItem.style.top = `${yVal}px`;
-    }
-    document.body.appendChild(clonedItem);
+    dropArea.appendChild(clonedItem);
+    clonedItem.addEventListener('click', function() {
+        selectItem(clonedItem);
+    });
     if (currView == "front") {
         frontItems.push(clonedItem);
     } else if (currView == "back") {
         backItems.push(clonedItem);
     }
-    if (clonedItem.id == document.getElementById("fur-patch").id) {
-        document.getElementById("fur-movement").style.display = 'block';
-        document.getElementById("lightind-movement").style.display = 'none';
-        document.getElementById("lights-movement").style.display = 'none';
-        document.getElementById("display-movement").style.display = 'none'
-        document.getElementById("vibrations-movement").style.display = 'none';
-        document.getElementById("noise-movement").style.display = 'none';
-        document.getElementById("other-movement").style.display = 'none';
-    } else if (clonedItem.id == document.getElementById("light-ind").id) {
-        document.getElementById("lightind-movement").style.display = 'block';
-        document.getElementById("fur-movement").style.display = 'none';
-        document.getElementById("lights-movement").style.display = 'none';
-        document.getElementById("display-movement").style.display = 'none'
-        document.getElementById("vibrations-movement").style.display = 'none';
-        document.getElementById("noise-movement").style.display = 'none';
-        document.getElementById("other-movement").style.display = 'none';
-    } else if (clonedItem.id == document.getElementById("light-strip").id) {
-        document.getElementById("lights-movement").style.display = 'block';
-        document.getElementById("lightind-movement").style.display = 'none';
-        document.getElementById("fur-movement").style.display = 'none';
-        document.getElementById("display-movement").style.display = 'none'
-        document.getElementById("vibrations-movement").style.display = 'none';
-        document.getElementById("noise-movement").style.display = 'none';
-        document.getElementById("other-movement").style.display = 'none';
-    } else if (clonedItem.id == document.getElementById("display").id) {
-        document.getElementById("display-movement").style.display = 'block';
-        document.getElementById("lightind-movement").style.display = 'none';
-        document.getElementById("lights-movement").style.display = 'none';
-        document.getElementById("fur-movement").style.display = 'none'
-        document.getElementById("vibrations-movement").style.display = 'none';
-        document.getElementById("noise-movement").style.display = 'none';
-        document.getElementById("other-movement").style.display = 'none';
-    } else if (clonedItem.id == document.getElementById("vibrations").id) {
-        document.getElementById("vibrations-movement").style.display = 'block';
-        document.getElementById("lightind-movement").style.display = 'none';
-        document.getElementById("lights-movement").style.display = 'none';
-        document.getElementById("display-movement").style.display = 'none'
-        document.getElementById("fur-movement").style.display = 'none';
-        document.getElementById("noise-movement").style.display = 'none';
-        document.getElementById("other-movement").style.display = 'none';
-    } else if (clonedItem.id == document.getElementById("noise").id) {
-        document.getElementById("noise-movement").style.display = 'block';
-        document.getElementById("lightind-movement").style.display = 'none';
-        document.getElementById("lights-movement").style.display = 'none';
-        document.getElementById("display-movement").style.display = 'none'
-        document.getElementById("vibrations-movement").style.display = 'none';
-        document.getElementById("fur-movement").style.display = 'none';
-        document.getElementById("other-movement").style.display = 'none';
-    } else if (clonedItem.id == document.getElementById("other").id) {
-        document.getElementById("other-movement").style.display = 'block';
-        document.getElementById("lightind-movement").style.display = 'none';
-        document.getElementById("lights-movement").style.display = 'none';
-        document.getElementById("display-movement").style.display = 'none'
-        document.getElementById("vibrations-movement").style.display = 'none';
-        document.getElementById("noise-movement").style.display = 'none';
-        document.getElementById("fur-movement").style.display = 'none';
-    } 
+    selectItem(clonedItem);
+}
+
+function selectItem(item) {
+    document.querySelectorAll('.dropped-item').forEach(item => item.classList.remove('selected-item'));
+    item.classList.add('selected-item');
+    document.querySelectorAll('.movement > div').forEach(div => {
+        div.style.display = 'none';
+    });
+    const baseId = item.id.split('-').slice(0, -1).join('-');
+    const movementElement = document.getElementById(`${baseId}-movement`);
+    if (movementElement) {
+        movementElement.style.display = 'block';
+    }
+    loadItemSelections(item.id);
+}
+
+//saving and loading item selections/customizations
+var itemSelections = {
+    front: {},
+    back: {}
+};
+function saveItemSelections(itemID, radioSelection, sliderValue) {
+    itemSelections[currView][itemID] = {radioSelection, sliderValue};
+}
+function loadItemSelections(itemID) {
+    const selection = itemSelections[currView][itemID];
+    if (selection) {
+        const radio = document.querySelector(`input[name="item-movement"][value="${selection.radioSelection}"]`);
+        if (radio) {
+            radio.checked = true;
+        }
+        const slider = document.getElementById("speed-range");
+        if (slider) {
+            slider.value = selection.sliderValue;
+            document.getElementById("value").innerHTML = selection.sliderValue;
+        }
+    } else {
+        resetRadioButtons();
+        resetSlider();
+    }
+}
+function resetRadioButtons() {
+    document.querySelectorAll('input[name="item-movement"]').forEach(input => {
+        input.checked = false;
+    });
+}
+function resetSlider() {
+    const slider = document.getElementById("speed-range");
+    slider.value = 5;
+    document.getElementById("value").innerHTML = 5;
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    //color selecting functionality
+    const squares = document.querySelectorAll('.square');
+    const selectedColorDisplay = document.getElementById('selected-color');
+    squares.forEach(square => {
+        square.addEventListener('click', () => {
+            squares.forEach(sq => sq.classList.remove('selected-col'));
+            square.classList.add('selected-col');
+            //const color = square.id;
+        });
+    });
+    //slider functionality
     var slider = document.getElementById("speed-range");
     var output = document.getElementById("value");
     output.innerHTML = slider.value;
     slider.oninput = function() {
         output.innerHTML = this.value;
     }
+    //saving radio button selection
+    document.querySelectorAll('input[name="item-movement"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            const selectedItem = document.querySelector('.dropped-item.selected-item');
+            if (selectedItem) {
+                saveItemSelections(selectedItem.id, this.value, document.getElementById("speed-range").value);
+            }
+        });
+    });
+    //saving color selection
+
+    //saving slider selection
+    document.getElementById("speed-range").addEventListener('input', function() {
+        const selectedItem = document.querySelector('.dropped-item.selected-item');
+        let radioValue;
+        if (selectedItem) {
+            const selectedRadio = document.querySelector('input[name="item-movement"]:checked');
+            if (selectedRadio) {
+                radioValue = selectedRadio.value;
+            } else {
+                radioValue = null;
+            }
+            saveItemSelections(selectedItem.id, radioValue, this.value);
+        }
+    });
 });
 
 //test
