@@ -33,42 +33,56 @@ function dragOver(e) {
     e.preventDefault();
 }
 function drag(e) {
-    e.dataTransfer.setData("text", e.target.id);
+    //e.dataTransfer.setData("text", e.target.id);
+    e.dataTransfer.setData("text", document.getElementById(e.target.id).id);
 }
 function drop(e) {
     e.preventDefault();
     var data = e.dataTransfer.getData("text");
     const item = document.getElementById(data);
-    const clonedItem = item.cloneNode(true);
-    const uniqueId = `${data}-${Date.now()}`;
-    clonedItem.id = uniqueId;
-    clonedItem.className = item.className + ' dropped-item';
-    clonedItem.style.cssText = item.style.cssText;
     const dropArea = document.getElementById('jacketbox');
-    const rect = dropArea.getBoundingClientRect();
+    const alreadyDroppedItem = dropArea.querySelector(`#${data}`);
+    if (alreadyDroppedItem) {
+        positionItem(alreadyDroppedItem, e, dropArea);
+    } else {
+        const clonedItem = item.cloneNode(true);
+        const uniqueId = `${data}-${Date.now()}`;
+        clonedItem.id = uniqueId;
+        clonedItem.className = item.className + ' dropped-item';
+        clonedItem.style.cssText = item.style.cssText;
+        positionItem(clonedItem, e, dropArea);
+        dropArea.appendChild(clonedItem);
+        clonedItem.addEventListener('click', function() {
+            selectItem(clonedItem);
+        });
+        if (currView == "front") {
+            frontItems.push(clonedItem);
+        } else if (currView == "back") {
+            backItems.push(clonedItem);
+        }
+        selectItem(clonedItem);
+    }
+}
+
+function positionItem(item, e, area) {
+    const rect = area.getBoundingClientRect();
     const offsetX = -345;
     const offsetY = -30;
     const xVal = e.clientX-rect.left-offsetX;
     const yVal = e.clientY-rect.top-offsetY;
-    clonedItem.style.position = 'absolute';
-    clonedItem.style.left = `${xVal}px`;
-    clonedItem.style.top = `${yVal}px`;
-    clonedItem.style.zIndex = '10';
-    dropArea.appendChild(clonedItem);
-    clonedItem.addEventListener('click', function() {
-        selectItem(clonedItem);
-    });
-    if (currView == "front") {
-        frontItems.push(clonedItem);
-    } else if (currView == "back") {
-        backItems.push(clonedItem);
+    item.style.position = 'absolute';
+    item.style.left = `${xVal}px`;
+    item.style.top = `${yVal}px`;
+    item.style.zIndex = '10';
+    if (item == '.light-strip') {
+        item.style.left='10px';
     }
-    selectItem(clonedItem);
 }
 
 function selectItem(item) {
     document.querySelectorAll('.dropped-item').forEach(item => item.classList.remove('selected-item'));
     item.classList.add('selected-item');
+    item.querySelectorAll('.rectangle, .circle').forEach(part => part.classList.add('selected-item'));
     document.querySelectorAll('.movement > div').forEach(div => {
         div.style.display = 'none';
     });
@@ -119,12 +133,20 @@ function resetSlider() {
 document.addEventListener('DOMContentLoaded', function() {
     //color selecting functionality
     const squares = document.querySelectorAll('.square');
-    const selectedColorDisplay = document.getElementById('selected-color');
     squares.forEach(square => {
         square.addEventListener('click', () => {
             squares.forEach(sq => sq.classList.remove('selected-col'));
             square.classList.add('selected-col');
-            //const color = square.id;
+            const color = square.id;
+            const selectedItem = document.querySelector('.dropped-item.selected-item');
+            const other = document.querySelector('.other');
+            if (selectedItem) {
+                if (selectedItem == other) {
+                    other.style.borderBottomColor = color;
+                    other.style.backgroundColor = transparent;
+                }
+                selectedItem.style.backgroundColor = color;
+            }
         });
     });
     //slider functionality
@@ -143,8 +165,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-    //saving color selection
-
     //saving slider selection
     document.getElementById("speed-range").addEventListener('input', function() {
         const selectedItem = document.querySelector('.dropped-item.selected-item');
@@ -159,7 +179,21 @@ document.addEventListener('DOMContentLoaded', function() {
             saveItemSelections(selectedItem.id, radioValue, this.value);
         }
     });
+    //delete item
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Delete' || e.key === 'Backspace') {
+            deleteItem();
+        }
+    });
 });
+
+//delete selected item
+function deleteItem() {
+    const selectedItem = document.querySelector('.dropped-item.selected-item');
+    if (selectedItem) {
+        selectedItem.remove();
+    }
+}
 
 //test
 function saveFile() {

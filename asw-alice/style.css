@@ -269,10 +269,18 @@ h1 {
 #pink { background: rgb(255, 136, 211); }
 #black { background: black; }
 #gray { background: gray; }
-#light-gray { background: rgb(240, 240, 240); }
+#lightyellow { background: lightyellow; }
 
 .selected-col {
   border: 1.5px solid white;
+}
+
+.fur-patch {
+  transform: translate(-50%, -50%);
+  height: 35px;
+  width: 65px;
+  border-radius: 0 0 150px 150px;
+  background-color: #bbb;
 }
 
 .light-ind {
@@ -284,13 +292,62 @@ h1 {
   cursor: grab;
 }
 
-.fur-patch {
-  top: 20%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  height: 35px;
-  width: 65px;
-  border-radius: 0 0 150px 150px;
+.light-strip {
+  position: relative;
+  height: 23px;
+  width: 23px;
+  cursor: grab;
+}
+
+.rectangle {
+  position: absolute;
+  width: 10px;
+  height: 200px;
   background-color: #bbb;
+  left: 7px;
+  margin-top: 50%;
+}
+
+.circle {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background-color: #bbb;
+  border-radius: 50%;
+  left: 0;
+}
+
+.display {
+  height: 25px;
+  width: 55px;
+  background-color: #bbb;
+  cursor: grab;
+}
+
+.circleV {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background-color: #bbb;
+  border-radius: 50%;
+}
+
+.vibrations {
+  position: relative;
+  height: 23px;
+  width: 23px;
+  cursor: grab;
+}
+
+.other {
+  width: 0;
+	height: 0;
+	border-left: 25px solid transparent;
+	border-right: 25px solid transparent;
+	border-bottom: 50px solid #bbb;
+}
+
+.item-container {
+  margin-top: 20%;
 }
 
