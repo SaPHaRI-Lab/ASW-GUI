@@ -43,7 +43,7 @@
           <div class="display" id="display" draggable="true" ondragstart="drag(event)"></div>
         </div>
       </div>
-      <div class="option">Vibrations
+      <!--<div class="option">Vibrations
         <div class="item-container">
           <div class="vibrations" id="vibrations" draggable="true" ondragstart="drag(event)">
             <div class="circleV" style="top:10px;"></div>
@@ -56,7 +56,7 @@
             <div class="circleV" style="top:18px; left:36px;"></div>
           </div>
         </div>
-      </div>
+      </div>-->
       <div class="option">Noise
         <img src = "noise.png" class="option-pic" id="noise" draggable="true" ondragstart="drag(event)">
       </div>
@@ -70,6 +70,7 @@
       <div class="undoredodel">
         <button id="undo" onclick="undo()">Undo</button>
         <button id="redo" onclick="redo()">Redo</button>
+        <button id="duplicate" onclick="duplicate()">Duplicate</button>
         <button id="delete" onclick="deleteItem()">Delete</button>
       </div>
       <div class="color">
@@ -89,7 +90,7 @@
       </div>
       <div class="speed">
         <h2 id="speed-title">Speed</h2>
-        <input type="range" min="1" max="10" value="5" class="slider" id="speed-range">
+        <input type="range" min="1" max="5" value="3" class="slider" id="speed-range">
         <p>Value: <span id="value"></span></p>
       </div>
       <h2 id="movement-title">Movement</h2>
@@ -108,10 +109,8 @@
         <div id="light-ind-movement" style="display: none;">
             <input type="radio" id="light-on" name="item-movement" value="Light on ind">
             <label for="light-on">Light on</label><br>
-            <input type="radio" id="flash-fast" name="item-movement" value="Flash fast ind">
-            <label for="flash-fast">Flash fast</label><br>
-            <input type="radio" id="flash-slow" name="item-movement" value="Flash slow ind">
-            <label for="flash-slow">Flash slow</label><br>
+            <input type="radio" id="flash" name="item-movement" value="Flash ind">
+            <label for="flash">Flash</label><br>
             <label for="custom-1">Write my own:</label><br>
             <input type="text" id="custom-1" name="item-movement" value="custom">
             <input type="submit" value="Submit">
@@ -119,10 +118,14 @@
         <div id="light-strip-movement" style="display: none;">
             <input type="radio" id="light-on" name="item-movement" value="Light on str">
             <label for="light-on">Light on</label><br>
-            <input type="radio" id="flash-fast" name="item-movement" value="Flash fast str">
-            <label for="flash-fast">Flash fast</label><br>
-            <input type="radio" id="flash-slow" name="item-movement" value="Flash slow str">
-            <label for="flash-slow">Flash slow</label><br>
+            <input type="radio" id="flash" name="item-movement" value="Flash str">
+            <label for="flash">Flash</label><br>
+            <input type="radio" id="trickle-up" name="item-movement" value="Trickle up">
+            <label for="trickle-up">Trickle up</label><br>
+            <input type="radio" id="trickle-down" name="item-movement" value="Trickle down">
+            <label for="trickle-down">Trickle down</label><br>
+            <input type="radio" id="random-fl" name="item-movement" value="Random fl">
+            <label for="random-fl">Random flash</label><br>
             <label for="custom-1">Write my own:</label><br>
             <input type="text" id="custom-1" name="item-movement" value="custom">
             <input type="submit" value="Submit">
@@ -161,7 +164,7 @@
         </div>
       </div>
       <div class="save">
-        <button type="button" id="save-button" onclick="saveFile()">Save</button>
+        <button type="button" id="save-button" onclick="saveFile()">Submit</button>
       </div>
     </div>
   </div>

@@ -292,7 +292,7 @@ h1 {
   cursor: grab;
 }
 
-.light-strip {
+#light-strip {
   position: relative;
   height: 23px;
   width: 23px;
