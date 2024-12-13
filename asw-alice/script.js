@@ -77,6 +77,8 @@ function positionItem(item, e, area) {
     if (item == '.light-strip') {
         item.style.left='10px';
     }
+    item.x = xVal;
+    item.y = yVal;
 }
 
 function selectItem(item) {
@@ -161,6 +163,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (flashingItems.has(selectedItem)) {
                     selectedItem.setAttribute('data-flashing-color', selectedColor);
                 }
+                selectedItem.color = selectedColor;
             }
         });
     });
@@ -193,6 +196,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     currSpeed = 200;
                     flashAnimation(selectedItem, 'random-fl');
                 }
+                selectedItem.radioSelection = this.value;
             }
         });
     });
@@ -357,15 +361,19 @@ function deleteItem() {
 //test --> also going to change this
 /*function saveFile() {
     const participantNum = document.getElementById('participant').value;
+    const videoNum = document.getElementById('videoNum').value;
     var csvFile = "data:text/csv;charset=utf-8,";
-    csvFile += "Participant,View,Item ID,X Position,Y Position\n";
-    for (let i = 0; i < frontItems.length; i++) {
-        csvFile += `${participantNum},jacket-front,${frontItems[i].id},${frontItems[i].x},${frontItems[i].y}\n`;
+    csvFile += "Jacket Side,Item ID,Customization,Color,X Position,Y Position\n";
+    for (let i = 0; i < frontItems.length; i++) { //items on jacket front
+        csvFile += `front,${frontItems[i].id},${frontItems[i].radioSelection},${frontItems[i].color},${frontItems[i].x},${frontItems[i].y}\n`;
+    }
+    for (let i = 0; i < backItems.length; i++) { //items on jacket back
+        csvFile += `back,${backItems[i].id},${backItems[i].radioSelection},${backItems[i].color},${backItems[i].x},${backItems[i].y}\n`;
     }
     const encodedUri = encodeURI(csvFile);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `${participantNum}.csv`);
+    link.setAttribute("download", `Participant_${participantNum}_Video_${videoNum}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
