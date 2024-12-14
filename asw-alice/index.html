@@ -58,7 +58,13 @@
         </div>
       </div>-->
       <div class="option">Noise
-        <img src = "noise.png" class="option-pic" id="noise" draggable="true" ondragstart="drag(event)">
+        <!--<img src = "noise.png" class="option-pic" id="noise" draggable="true" ondragstart="drag(event)">-->
+        <div class="item-container">
+          <div class= "noise" id="noise" draggable="true" ondragstart="drag(event)">
+            <div class="rectangle2"></div>
+            <div class="trapezoid "></div>
+          </div>
+        </div>
       </div>
       <div class="option">Other
         <div class="item-container">
@@ -131,10 +137,8 @@
             <input type="submit" value="Submit">
         </div>
         <div id="display-movement" style="display: none;">
-            <input type="radio" id="tbd1" name="item-movement" value="TBD1">
-            <label for="tbd1">TBD1</label><br>
-            <input type="radio" id="tbd2" name="item-movement" value="TBD2">
-            <label for="tbd2">TBD2</label><br>
+            <input type="radio" id="social-battery" name="item-movement" value="Social battery">
+            <label for="social-battery">Social Battery</label><br>
             <label for="custom-1">Write my own:</label><br>
             <input type="text" id="custom-1" name="item-movement" value="custom">
             <input type="submit" value="Submit">
