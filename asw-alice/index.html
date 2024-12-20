@@ -13,7 +13,7 @@
     <div class="sidebar">
       <div class="identifiers">
         <label for="participant" id="pNum">Participant #:</label>
-        <input type="text" id="participant"/> <!--placeholder="Enter participant #"/>-->
+        <input type="text" id="participant"/>
         <label for="videoNum" id="vNum">Video Code:</label>
         <input type="text" id="videoNum"/>
       </div>
@@ -43,22 +43,7 @@
           <div class="display" id="display" draggable="true" ondragstart="drag(event)"></div>
         </div>
       </div>
-      <!--<div class="option">Vibrations
-        <div class="item-container">
-          <div class="vibrations" id="vibrations" draggable="true" ondragstart="drag(event)">
-            <div class="circleV" style="top:10px;"></div>
-            <div class="circleV" style="top:10px; left:12px;"></div>
-            <div class="circleV" style="top:10px; left:24px;"></div>
-            <div class="circleV" style="top:10px; left:36px;"></div>
-            <div class="circleV" style="top:18px;"></div>
-            <div class="circleV" style="top:18px; left:12px;"></div>
-            <div class="circleV" style="top:18px; left:24px;"></div>
-            <div class="circleV" style="top:18px; left:36px;"></div>
-          </div>
-        </div>
-      </div>-->
       <div class="option">Noise
-        <!--<img src = "noise.png" class="option-pic" id="noise" draggable="true" ondragstart="drag(event)">-->
         <div class="item-container">
           <div class= "noise" id="noise" draggable="true" ondragstart="drag(event)">
             <div class="rectangle2"></div>
@@ -102,24 +87,16 @@
       <h2 id="movement-title">Movement</h2>
       <div class="movement">
         <div id="fur-patch-movement" style="display: none;">
-          <!--<form action="/action_page.php">-->
             <input type="radio" id="shake" name="item-movement" value="Shake">
             <label for="shake">Shake</label><br>
             <input type="radio" id="stick-up" name="item-movement" value="Stick up">
             <label for="stick-up">Stick up</label><br>
-            <label for="custom-1">Write my own:</label><br>
-            <input type="text" id="custom-1" name="item-movement" value="custom">
-            <input type="submit" value="Submit">
-          <!--</form>-->
         </div>
         <div id="light-ind-movement" style="display: none;">
             <input type="radio" id="light-on" name="item-movement" value="Light on ind">
             <label for="light-on">Light on</label><br>
             <input type="radio" id="flash" name="item-movement" value="Flash ind">
             <label for="flash">Flash</label><br>
-            <label for="custom-1">Write my own:</label><br>
-            <input type="text" id="custom-1" name="item-movement" value="custom">
-            <input type="submit" value="Submit">
         </div>
         <div id="light-strip-movement" style="display: none;">
             <input type="radio" id="light-on" name="item-movement" value="Light on str">
@@ -132,41 +109,24 @@
             <label for="trickle-down">Trickle down</label><br>
             <input type="radio" id="random-fl" name="item-movement" value="Random fl">
             <label for="random-fl">Random flash</label><br>
-            <label for="custom-1">Write my own:</label><br>
-            <input type="text" id="custom-1" name="item-movement" value="custom">
-            <input type="submit" value="Submit">
         </div>
         <div id="display-movement" style="display: none;">
             <input type="radio" id="social-battery" name="item-movement" value="Social battery">
             <label for="social-battery">Social Battery</label><br>
-            <label for="custom-1">Write my own:</label><br>
-            <input type="text" id="custom-1" name="item-movement" value="custom">
-            <input type="submit" value="Submit">
-        </div>
-        <div id="vibrations-movement" style="display: none;">
-            <input type="radio" id="low" name="item-movement" value="Low">
-            <label for="low">Low</label><br>
-            <input type="radio" id="high" name="item-movement" value="High">
-            <label for="high">High</label><br>
-            <label for="custom-1">Write my own:</label><br>
-            <input type="text" id="custom-1" name="item-movement" value="custom">
-            <input type="submit" value="Submit">
         </div>
         <div id="noise-movement" style="display: none;">
             <input type="radio" id="loud" name="item-movement" value="Loud">
             <label for="loud">Loud</label><br>
             <input type="radio" id="quiet" name="item-movement" value="Quiet">
             <label for="quiet">Quiet</label><br>
-            <label for="custom-1">Write my own:</label><br>
-            <input type="text" id="custom-1" name="item-movement" value="custom">
-            <input type="submit" value="Submit">
         </div>
         <div id="other-movement" style="display: none;">
-            <label for="custom-1">Write my own:</label><br>
-            <input type="text" id="custom-1" name="item-movement" value="custom">
-            <input type="submit" value="Submit">
         </div>
       </div>
+      <div class="custom-user-input">
+        <h2 id="custom-title">Write my own:</h2>
+        <textarea id="custom-input" name="item-movement" rows="3" cols="25"></textarea>
+    </div>
       <div class="save">
         <button type="button" id="save-button" onclick="saveFile()">Submit</button>
       </div>

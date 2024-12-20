@@ -193,6 +193,12 @@ h1 {
   padding: 20px;
 }
 
+#custom-title {
+  font-weight: lighter;
+  color: white;
+  font-size: 15px;
+}
+
 #color {
   width: 100px;
   height: 100px;
@@ -333,13 +339,6 @@ h1 {
   border-radius: 50%;
 }
 
-/*.vibrations {
-  position: relative;
-  height: 23px;
-  width: 23px;
-  cursor: grab;
-}*/
-
 #noise {
   position: relative;
   height: 23px;
@@ -375,4 +374,3 @@ h1 {
 .item-container {
   margin-top: 20%;
 }
-

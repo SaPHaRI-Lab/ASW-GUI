@@ -104,8 +104,8 @@ var itemSelections = {
     front: {},
     back: {}
 };
-function saveItemSelections(itemID, radioSelection, sliderValue) {
-    itemSelections[currView][itemID] = {radioSelection, sliderValue};
+function saveItemSelections(itemID, radioSelection, sliderValue, userInput) {
+    itemSelections[currView][itemID] = {radioSelection, sliderValue, userInput};
 }
 function loadItemSelections(itemID) {
     const selection = itemSelections[currView][itemID];
@@ -113,15 +113,26 @@ function loadItemSelections(itemID) {
         const radio = document.querySelector(`input[name="item-movement"][value="${selection.radioSelection}"]`);
         if (radio) {
             radio.checked = true;
+        } else {
+            resetRadioButtons();
         }
         const slider = document.getElementById("speed-range");
         if (slider) {
             slider.value = selection.sliderValue;
-            document.getElementById("value").innerHTML = selection.sliderValue;
+            document.getElementById("value").innerHTML = slider.value;
+        }
+        const userInputBox = document.getElementById('custom-input');
+        if (userInputBox) {
+            if (selection.userInput) {
+                userInputBox.value = selection.userInput;
+            } else {
+                userInputBox.value = '';
+            }
         }
     } else {
         resetRadioButtons();
         resetSlider();
+        resetUserInput();
     }
 }
 function resetRadioButtons() {
@@ -133,6 +144,12 @@ function resetSlider() {
     const slider = document.getElementById("speed-range");
     slider.value = 3;
     document.getElementById("value").innerHTML = 3;
+}
+function resetUserInput() {
+    const userInputBox = document.getElementById('custom-input');
+    if (userInputBox) {
+        userInputBox.value = '';
+    }
 }
 
 let flashInterval = null;
@@ -180,7 +197,7 @@ document.addEventListener('DOMContentLoaded', function() {
         radio.addEventListener('change', function() {
             const selectedItem = document.querySelector('.dropped-item.selected-item');
             if (selectedItem) {
-                saveItemSelections(selectedItem.id, this.value, document.getElementById("speed-range").value);
+                saveItemSelections(selectedItem.id, this.value, document.getElementById("speed-range").value, document.getElementById("custom-input").value);
                 if (radio.value.includes('Light on')) {
                     stopFlash(selectedItem);
                 } else if (radio.value.includes('Flash')) {
@@ -200,6 +217,21 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+    //saving user input
+    document.getElementById("custom-input").addEventListener('input', function(){
+        const selectedItem = document.querySelector('.dropped-item.selected-item');
+        let radioValue;
+        if (selectedItem) {
+            const selectedRadio = document.querySelector('input[name="item-movement"]:checked');
+            if (selectedRadio) {
+                radioValue = selectedRadio.value;
+            } else {
+                radioValue = null;
+            }
+            saveItemSelections(selectedItem.id, radioValue, document.getElementById("speed-range").value, this.value);
+            //selectedItem.userinput = document.getElementById(selectedItem.custom-${selectedItem.id}).value;//selectedItem.userinput = document.getElementById("custom-1").value;
+        }
+    });
     //saving slider selection
     document.getElementById("speed-range").addEventListener('input', function() {
         const selectedItem = document.querySelector('.dropped-item.selected-item');
@@ -211,7 +243,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 radioValue = null;
             }
-            saveItemSelections(selectedItem.id, radioValue, this.value);
+            saveItemSelections(selectedItem.id, radioValue, this.value, document.getElementById("custom-input").value);
         }
     });
     //delete item
@@ -325,6 +357,8 @@ function duplicate() {
         clonedItem.id = `${selectedItem.id}-copy-${Date.now()}`;
         clonedItem.className = selectedItem.className + ' dropped-item';
         clonedItem.style.cssText = selectedItem.style.cssText;
+        //clonedItem.move = document.getElementById(`${selectedItem.id}-movement`);//HERE****************************
+        selectItem(clonedItem);
         const rect = selectedItem.getBoundingClientRect();
         clonedItem.style.position = 'absolute';
         clonedItem.style.left = `${rect.left+10}px`;
@@ -335,7 +369,7 @@ function duplicate() {
         clonedItem.addEventListener('click', function() {
             selectItem(clonedItem);
         });
-        clonedItem.setAttribute('data-flashing-color', selectedItem.getAttribute('data-flashing-color'));
+        clonedItem.setAttribute('data-flashing-color', selectedItem.getAttribute('data-flashing-color'));//flashing works for dupe but not other animations
         if (flashingItems.has(selectedItem)) {
             flashingItems.add(clonedItem);
         }
@@ -359,16 +393,16 @@ function deleteItem() {
 }
 
 //test --> also going to change this
-/*function saveFile() {
+function saveFile() {
     const participantNum = document.getElementById('participant').value;
     const videoNum = document.getElementById('videoNum').value;
     var csvFile = "data:text/csv;charset=utf-8,";
-    csvFile += "Jacket Side,Item ID,Customization,Color,X Position,Y Position\n";
-    for (let i = 0; i < frontItems.length; i++) { //items on jacket front
-        csvFile += `front,${frontItems[i].id},${frontItems[i].radioSelection},${frontItems[i].color},${frontItems[i].x},${frontItems[i].y}\n`;
+    csvFile += "Jacket Side,Item ID,Customization,User Input,Color,X Position,Y Position\n";
+    for (let i = 0; i < frontItems.length; i++) { //items on jacket front  selectedItem.userinput = document.getElementById(selectedItem.custom-1).value;
+        csvFile += `front,${frontItems[i].id},${frontItems[i].radioSelection},${frontItems[i].userinput},${frontItems[i].color},${frontItems[i].x},${frontItems[i].y}\n`;
     }
     for (let i = 0; i < backItems.length; i++) { //items on jacket back
-        csvFile += `back,${backItems[i].id},${backItems[i].radioSelection},${backItems[i].color},${backItems[i].x},${backItems[i].y}\n`;
+        csvFile += `back,${backItems[i].id},${backItems[i].radioSelection},${backItems[i].userinput},${backItems[i].color},${backItems[i].x},${backItems[i].y}\n`;
     }
     const encodedUri = encodeURI(csvFile);
     const link = document.createElement("a");
@@ -377,4 +411,4 @@ function deleteItem() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-}*/
+}
