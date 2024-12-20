@@ -91,7 +91,12 @@ function selectItem(item) {
     document.querySelectorAll('.movement > div').forEach(div => {
         div.style.display = 'none';
     });
-    const baseId = item.id.split('-').slice(0, -1).join('-');
+    let baseId = item.id;
+    if (baseId.includes('copy')) {
+        baseId = item.id.split('-').slice(0, -2).join('-');
+    } else {
+        baseId = item.id.split('-').slice(0, -1).join('-');
+    }
     const movementElement = document.getElementById(`${baseId}-movement`);
     if (movementElement) {
         movementElement.style.display = 'block';
@@ -229,7 +234,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 radioValue = null;
             }
             saveItemSelections(selectedItem.id, radioValue, document.getElementById("speed-range").value, this.value);
-            //selectedItem.userinput = document.getElementById(selectedItem.custom-${selectedItem.id}).value;//selectedItem.userinput = document.getElementById("custom-1").value;
+            selectedItem.userinput = document.getElementById("custom-input").value;
         }
     });
     //saving slider selection
@@ -248,7 +253,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     //delete item
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Delete' || e.key === 'Backspace') {
+        if (e.key === 'Delete') {
             deleteItem();
         }
     });
@@ -354,11 +359,10 @@ function duplicate() {
     const selectedItem = document.querySelector('.dropped-item.selected-item');
     if (selectedItem) {
         const clonedItem = selectedItem.cloneNode(true);
-        clonedItem.id = `${selectedItem.id}-copy-${Date.now()}`;
+        const tempId = selectedItem.id.split('-').slice(0, -1).join('-');;
+        clonedItem.id = `${tempId}-copy-${Date.now()}`;
         clonedItem.className = selectedItem.className + ' dropped-item';
         clonedItem.style.cssText = selectedItem.style.cssText;
-        //clonedItem.move = document.getElementById(`${selectedItem.id}-movement`);//HERE****************************
-        selectItem(clonedItem);
         const rect = selectedItem.getBoundingClientRect();
         clonedItem.style.position = 'absolute';
         clonedItem.style.left = `${rect.left+10}px`;
@@ -366,6 +370,15 @@ function duplicate() {
         clonedItem.style.zIndex = '10';
         const dropArea = document.getElementById('jacketbox');
         dropArea.appendChild(clonedItem);
+        if (currView === 'front') {
+            frontItems.push(clonedItem);
+        } else if (currView === 'back') {
+            backItems.push(clonedItem);
+        }
+        const ogCustomizations = itemSelections[currView][selectedItem.id];
+        if (ogCustomizations) {
+            itemSelections[currView][clonedItem.id] = {...ogCustomizations};
+        }
         clonedItem.addEventListener('click', function() {
             selectItem(clonedItem);
         });
@@ -373,6 +386,7 @@ function duplicate() {
         if (flashingItems.has(selectedItem)) {
             flashingItems.add(clonedItem);
         }
+        selectItem(clonedItem);
     }
 }
 
