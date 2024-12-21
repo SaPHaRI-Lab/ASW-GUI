@@ -374,3 +374,12 @@ h1 {
 .item-container {
   margin-top: 20%;
 }
+
+p {
+  font-size: 12px;
+  color: lightgray;
+}
+#value {
+  font-size: 15px;
+  color: white;
+}

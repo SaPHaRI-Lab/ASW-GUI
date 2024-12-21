@@ -249,6 +249,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 radioValue = null;
             }
             saveItemSelections(selectedItem.id, radioValue, this.value, document.getElementById("custom-input").value);
+            selectedItem.speed = this.value;
         }
     });
     //delete item
@@ -378,6 +379,19 @@ function duplicate() {
         const ogCustomizations = itemSelections[currView][selectedItem.id];
         if (ogCustomizations) {
             itemSelections[currView][clonedItem.id] = {...ogCustomizations};
+            clonedItem.radioSelection = ogCustomizations.radioSelection;
+            clonedItem.speed = ogCustomizations.sliderValue;
+            clonedItem.userinput = ogCustomizations.userInput;
+            clonedItem.color = selectedColor;
+            clonedItem.x = rect.left+10;
+            clonedItem.y = rect.top+10; //maybe double check the coords
+        } else {
+            clonedItem.radioSelection = null;
+            clonedItem.speed = null;
+            clonedItem.userinput = null;
+            clonedItem.color = null;
+            clonedItem.x = rect.left+10;
+            clonedItem.y = rect.top+10;
         }
         clonedItem.addEventListener('click', function() {
             selectItem(clonedItem);
@@ -411,12 +425,12 @@ function saveFile() {
     const participantNum = document.getElementById('participant').value;
     const videoNum = document.getElementById('videoNum').value;
     var csvFile = "data:text/csv;charset=utf-8,";
-    csvFile += "Jacket Side,Item ID,Customization,User Input,Color,X Position,Y Position\n";
+    csvFile += "Jacket Side,Item ID,Customization,Speed,User Input,Color,X Position,Y Position\n";
     for (let i = 0; i < frontItems.length; i++) { //items on jacket front  selectedItem.userinput = document.getElementById(selectedItem.custom-1).value;
-        csvFile += `front,${frontItems[i].id},${frontItems[i].radioSelection},${frontItems[i].userinput},${frontItems[i].color},${frontItems[i].x},${frontItems[i].y}\n`;
+        csvFile += `front,${frontItems[i].id},${frontItems[i].radioSelection},${frontItems[i].speed},${frontItems[i].userinput},${frontItems[i].color},${frontItems[i].x},${frontItems[i].y}\n`;
     }
     for (let i = 0; i < backItems.length; i++) { //items on jacket back
-        csvFile += `back,${backItems[i].id},${backItems[i].radioSelection},${backItems[i].userinput},${backItems[i].color},${backItems[i].x},${backItems[i].y}\n`;
+        csvFile += `back,${backItems[i].id},${backItems[i].radioSelection},${backItems[i].speed},${backItems[i].userinput},${backItems[i].color},${backItems[i].x},${backItems[i].y}\n`;
     }
     const encodedUri = encodeURI(csvFile);
     const link = document.createElement("a");
