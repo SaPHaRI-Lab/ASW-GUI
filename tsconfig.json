@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "lib": [
+      "es2020"
+    ],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "outDir": "./dist",
+    "sourceMap": true,
+    "target": "es2020"
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}
