@@ -1,6 +1,6 @@
 <link rel="stylesheet" href="style.css" />
 <script src="script.js"></script>
-<h1 id="title">Animation Maker</h1>
+<h1 id="title">Wearable Design</h1>
 <body>
   <div class="container">
     <div class="box">
@@ -18,17 +18,17 @@
         <input type="text" id="videoNum"/>
       </div>
       <div class="option">Fur Patch
-        <div class="item-container">
+        <div class="item-container" id="fur-patch-cont">
           <div class="fur-patch" id="fur-patch" draggable="true" ondragstart="drag(event)"></div>
         </div>
       </div>
-      <div class="option">Light (Ind.)
-        <div class="item-container">
+      <div class="option">Individual Light
+        <div class="item-container" id="light-ind-cont">
           <div class="light-ind" id="light-ind" draggable="true" ondragstart="drag(event)"></div>
         </div>
       </div>
       <div class="option">Light Strip
-        <div class="item-container">
+        <div class="item-container" id="light-strip-cont">
           <div class="light-strip" id="light-strip" draggable="true" ondragstart="drag(event)">
             <div class="rectangle"></div>
             <div class="circle" style="top:10px;"></div>
@@ -38,21 +38,21 @@
           </div>
         </div>
       </div>
-      <div class="option">Display
-        <div class="item-container">
+      <div class="option">Social Battery Display
+        <div class="item-container" id="display-cont">
           <div class="display" id="display" draggable="true" ondragstart="drag(event)"></div>
         </div>
       </div>
-      <div class="option">Noise
-        <div class="item-container">
-          <div class= "noise" id="noise" draggable="true" ondragstart="drag(event)">
+      <div class="option">Speaker
+        <div class="item-container" id="speaker-cont">
+          <div class= "speaker" id="speaker" draggable="true" ondragstart="drag(event)">
             <div class="rectangle2"></div>
             <div class="trapezoid "></div>
           </div>
         </div>
       </div>
       <div class="option">Other
-        <div class="item-container">
+        <div class="item-container" id="other-cont">
           <div class= "other" id="other" draggable="true" ondragstart="drag(event)"></div>
         </div>
       </div>
@@ -114,7 +114,7 @@
             <input type="radio" id="social-battery" name="item-movement" value="Social battery">
             <label for="social-battery">Social Battery</label><br>
         </div>
-        <div id="noise-movement" style="display: none;">
+        <div id="speaker-movement" style="display: none;">
             <input type="radio" id="loud" name="item-movement" value="Loud">
             <label for="loud">Loud</label><br>
             <input type="radio" id="quiet" name="item-movement" value="Quiet">

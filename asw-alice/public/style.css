@@ -282,7 +282,7 @@ h1 {
 }
 
 .fur-patch {
-  transform: translate(-50%, -50%);
+  /*transform: translate(-50%, -50%);*/
   height: 35px;
   width: 65px;
   border-radius: 0 0 150px 150px;
@@ -297,18 +297,24 @@ h1 {
   display: inline-block;
   cursor: grab;
 }
+#light-ind-cont {
+  margin-left: 20%;
+}
 
 #light-strip {
   position: relative;
   height: 23px;
   width: 23px;
   cursor: grab;
-  margin-bottom: 170%;
+}
+#light-strip-cont {
+  margin-left: 20%;
+  margin-bottom: 200%;
 }
 
 .rectangle {
   position: absolute;
-  width: 10px;
+  width: 3px;
   height: 200px;
   background-color: #bbb;
   left: 7px;
@@ -330,6 +336,9 @@ h1 {
   background-color: #bbb;
   cursor: grab;
 }
+#display-cont {
+  margin-left: 7%;
+}
 
 .circleV {
   position: absolute;
@@ -339,11 +348,15 @@ h1 {
   border-radius: 50%;
 }
 
-#noise {
+#speaker {
   position: relative;
   height: 23px;
   width: 23px;
   cursor: grab;
+}
+#speaker-cont {
+  margin-top: 18%;
+  margin-left: 5%;
 }
 
 .rectangle2 {
@@ -372,7 +385,8 @@ h1 {
 }
 
 .item-container {
-  margin-top: 20%;
+  margin-top: 10%;
+  margin-bottom: 20%;
 }
 
 p {
