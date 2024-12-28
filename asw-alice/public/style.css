@@ -20,6 +20,80 @@ h1 {
   color: white;
 }
 
+.popup {
+  position: fixed;
+  display: flex;
+  background: rgba(0, 0, 0, 0.7); 
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+}
+.popup-instructions {
+  background: #dcdcdc;
+  text-align: center;
+  border-radius: 10px;
+  width: 35%;
+}
+#popup-text {
+  color: black;
+  font-size: 17px;
+  padding-left: 7%;
+  padding-right: 7%;
+}
+.popup-identifiers {
+  margin-bottom: 40px;
+}
+#participant1 {
+  background-color: transparent;
+  color: black;
+  outline: none;
+  outline-style: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: solid black 1px;
+  padding: 3px 10px;
+  width: 50px;
+}
+#pNum1, #vNum1 {
+  font-size: 15px;
+  color: black;
+}
+#pNum1, #participant1 {
+  display: inline-block;
+  vertical-align: middle;
+}
+#participant1 {
+  margin-right: 5%;
+}
+#videoNum1 {
+  background-color: transparent;
+  color: black;
+  outline: none;
+  outline-style: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: solid black 1px;
+  padding: 3px 10px;
+  width: 50px;
+}
+#vNum1, #videoNum1 {
+  display: inline-block;
+  vertical-align: middle;
+}
+#continue-button {
+  cursor: pointer;
+  background-color: #8CE3FF;
+  border-radius: 3px;
+  border-color: #8CE3FF;
+  padding: 8px;
+  font-size: 15px;
+  margin-bottom: 20px;
+}
+
 .box {
   flex-grow: 1;
   display: flex;
@@ -157,7 +231,19 @@ h1 {
   z-index: 1;
 }
 
-#switch-view {
+#back-view {
+  position: absolute;
+  bottom: 70px;
+  right: 380px;
+  z-index: 10;
+  cursor: pointer;
+  background-color: #8CE3FF;
+  border-radius: 3px;
+  border-color: #8CE3FF;
+  padding: 8px;
+  font-size: 15px;
+}
+#front-view {
   position: absolute;
   bottom: 70px;
   right: 380px;
@@ -317,8 +403,9 @@ h1 {
   width: 3px;
   height: 200px;
   background-color: #bbb;
-  left: 7px;
+  left: 8.5px;
   margin-top: 50%;
+  cursor: grab;
 }
 
 .circle {
@@ -328,6 +415,39 @@ h1 {
   background-color: #bbb;
   border-radius: 50%;
   left: 0;
+  cursor: grab;
+}
+
+#battery {
+  position: relative;
+  height: 25px;
+  width: 55px;
+  cursor: grab;
+}
+#battery-cont {
+  margin-left: 7%;
+}
+
+.battery1 {
+  position: absolute;
+  height: 25px;
+  width: 55px;
+  background-color: #bbb;
+  top: 0;
+  left: 0;
+  cursor: grab;
+}
+
+.battery2 {
+  position: absolute;
+  height: 14px;
+  width: 10px;
+  background-color: #bbb;
+  /*left: -4px;
+  margin-top: 10%;*/
+  top: 5px;
+  left: -5px;
+  cursor: grab;
 }
 
 .display {
@@ -338,14 +458,6 @@ h1 {
 }
 #display-cont {
   margin-left: 7%;
-}
-
-.circleV {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  background-color: #bbb;
-  border-radius: 50%;
 }
 
 #speaker {
@@ -365,6 +477,7 @@ h1 {
   height: 15px;
   background-color: #bbb;
   left: 3px;
+  cursor: grab;
 }
 
 .trapezoid {
@@ -374,6 +487,7 @@ h1 {
 	border-right: 10px solid transparent;
   border-bottom: 15px solid #bbb;
   transform: rotate(270deg);
+  cursor: grab;
 }
 
 .other {

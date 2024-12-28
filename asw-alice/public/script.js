@@ -15,6 +15,8 @@ function switchView() {
         front.style.display = 'none';
         back.style.display = 'block';
         currView = "back";
+        document.getElementById('front-view').style.display = 'block';
+        document.getElementById('back-view').style.display = 'none';
     } else {
         for (let i = 0; i < frontItems.length; i++) {
             frontItems[i].style.display = 'block';
@@ -25,6 +27,8 @@ function switchView() {
         front.style.display = 'block';
         back.style.display = 'none';
         currView = "front";
+        document.getElementById('back-view').style.display = 'block';
+        document.getElementById('front-view').style.display = 'none';
     }
 }
 
@@ -258,6 +262,23 @@ document.addEventListener('DOMContentLoaded', function() {
             deleteItem();
         }
     });
+    //user input for popup
+    const p1 = document.getElementById("participant1");
+    const vN1 = document.getElementById("videoNum1")
+    p1.addEventListener('input', function() {
+        if ((p1.value != "") && (vN1.value != "")) {
+            document.getElementById("continue-button").disabled = false;
+        } else {
+            document.getElementById("continue-button").disabled = true;
+        }
+    });
+    vN1.addEventListener('input', function() {
+        if ((p1.value != "") && (vN1.value != "")) {
+            document.getElementById("continue-button").disabled = false;
+        } else {
+            document.getElementById("continue-button").disabled = true;
+        }
+    });
 });
 
 function flashAnimation(item, flashPattern) {
@@ -418,6 +439,12 @@ function deleteItem() {
     if (selectedItem) {
         selectedItem.remove();
     }
+}
+
+function continueToGUI() {
+    document.querySelector(".popup").style.display = 'none';
+    document.getElementById("participant").value = document.getElementById("participant1").value;
+    document.getElementById("videoNum").value = document.getElementById("videoNum1").value;
 }
 
 //test --> also going to change this

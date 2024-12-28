@@ -2,12 +2,26 @@
 <script src="script.js"></script>
 <h1 id="title">Wearable Design</h1>
 <body>
+  <div class="popup">
+    <div class="popup-instructions">
+    <h2>Instructions</h2>
+    <p id="popup-text"><br>Welcome to the Affect-Sensing Wearable graphical user interface (GUI)!</br><br>Please drag & drop features from the left sidebar onto the central jacket image based on the video you have watched.</br><br>Before beginning, please enter your participant number and video code below:</br></p>
+    <div class="popup-identifiers">
+      <label for="participant1" id="pNum1">Participant #:</label>
+      <input type="text" id="participant1"/>
+      <label for="videoNum1" id="vNum1">Video Code:</label>
+      <input type="text" id="videoNum1"/>
+    </div>
+    <button id="continue-button" disabled onclick="continueToGUI()">Continue</button>
+  </div>
+  </div>
   <div class="container">
     <div class="box">
       <div class="jacketbox" id="jacketbox">
-        <img src="jacketfront.png" id="jacket-front" ondrop="drop(event)" ondragover="dragOver(event)"/>
-        <img src="jacketback.png" id="jacket-back" ondrop="drop(event)" ondragover="dragOver(event)" style="display: none;" />
-        <button id="switch-view" onclick="switchView()">Switch View</button>
+        <img src="jacketfront.png" id="jacket-front" draggable="false" ondrop="drop(event)" ondragover="dragOver(event)"/>
+        <img src="jacketback.png" id="jacket-back" draggable="false" ondrop="drop(event)" ondragover="dragOver(event)" style="display: none;" />
+        <button id="back-view" onclick="switchView()">Switch to Back</button>
+        <button id="front-view" onclick="switchView()" style="display: none;">Switch to Front</button>
       </div>
     </div>
     <div class="sidebar">
@@ -31,14 +45,24 @@
         <div class="item-container" id="light-strip-cont">
           <div class="light-strip" id="light-strip" draggable="true" ondragstart="drag(event)">
             <div class="rectangle"></div>
-            <div class="circle" style="top:10px;"></div>
-            <div class="circle" style="top:70px;"></div>
-            <div class="circle" style="top:130px;"></div>
-            <div class="circle" style="top:190px;"></div>
+            <div class="circle" style="top:-3px;"></div>
+            <div class="circle" style="top:37px;"></div>
+            <div class="circle" style="top:77px;"></div>
+            <div class="circle" style="top:117px;"></div>
+            <div class="circle" style="top:157px;"></div>
+            <div class="circle" style="top:195px;"></div>
           </div>
         </div>
       </div>
       <div class="option">Social Battery Display
+        <div class="item-container" id="battery-cont">
+          <div class="battery" id="battery" draggable="true" ondragstart="drag(event)">
+            <div class="battery1"></div>
+            <div class="battery2"></div>
+          </div>
+        </div>
+      </div>
+      <div class="option">Display Screen
         <div class="item-container" id="display-cont">
           <div class="display" id="display" draggable="true" ondragstart="drag(event)"></div>
         </div>
