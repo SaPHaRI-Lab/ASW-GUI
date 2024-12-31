@@ -8,7 +8,7 @@ body {
   background-color: #232323;
 }
 
-h1 {
+#title {
   text-align: center;
   font-size: 25px;
   margin-top: 20px;
@@ -30,11 +30,16 @@ h1 {
   height: 100%;
   z-index: 1000;
 }
+#popup-title {
+  font-weight: normal;
+  font-size: 27px;
+  padding-top: 12px;
+}
 .popup-instructions {
-  background: #dcdcdc;
+  background: #e7e7e7;
   text-align: center;
   border-radius: 10px;
-  width: 35%;
+  width: 42%;
 }
 #popup-text {
   color: black;
@@ -86,9 +91,9 @@ h1 {
 }
 #continue-button {
   cursor: pointer;
-  background-color: #8CE3FF;
+  background-color: #9be4fc;
   border-radius: 3px;
-  border-color: #8CE3FF;
+  border-color: #9be4fc;
   padding: 8px;
   font-size: 15px;
   margin-bottom: 20px;
@@ -151,9 +156,6 @@ h1 {
 .dropped-item {
   z-index: 3;
   position: absolute;
-  /*width: 100px;
-  background-color: red;
-  height: 50px;*/
 }
 
 .customization {
@@ -162,6 +164,44 @@ h1 {
   position: absolute;
   right: 0;
   padding-top: 100px;
+}
+
+#info-button {
+  border-radius: 100%;
+  margin-top: -30%;
+  margin-bottom: 20%;
+  color: white;
+  background: rgb(126, 126, 126);
+  height: 25px;
+  width: 25px;
+  text-align: center;
+}
+.popup-info {
+  position: absolute;
+  top: 70px;
+  left: 60px;
+  background: white;
+  border-color: gray;
+  height: 210px;
+  width: 350px;
+  z-index: 1000;
+  border-radius: 10px;
+  border-style: solid;
+  border-width: 0.2em;
+}
+#info-title {
+  text-align: center;
+  font-weight: normal;
+  font-size: 25px;
+  margin-top: -8px;
+  margin-bottom: 23px;
+}
+#info-text {
+  color: black;
+  font-size: 15px;
+  padding-left: 9%;
+  padding-right: 9%;
+  margin-bottom: 10px;
 }
 
 .identifiers {
@@ -237,9 +277,9 @@ h1 {
   right: 380px;
   z-index: 10;
   cursor: pointer;
-  background-color: #8CE3FF;
+  background-color: #9be4fc;
   border-radius: 3px;
-  border-color: #8CE3FF;
+  border-color: #9be4fc;
   padding: 8px;
   font-size: 15px;
 }
@@ -249,9 +289,9 @@ h1 {
   right: 380px;
   z-index: 10;
   cursor: pointer;
-  background-color: #8CE3FF;
+  background-color: #9be4fc;
   border-radius: 3px;
-  border-color: #8CE3FF;
+  border-color: #9be4fc;
   padding: 8px;
   font-size: 15px;
 }
@@ -337,6 +377,28 @@ h1 {
 
 .selected-item {
   border: 2px solid #0094FF;
+}
+
+.selected-item .rotate-circle {
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background-color: #0094FF;
+  cursor: grab;
+}
+.selected-item .rotate-circle::before {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 10px;
+  background-color: #0094FF;
 }
 
 .color-grid {

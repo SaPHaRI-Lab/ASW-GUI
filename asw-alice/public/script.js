@@ -88,13 +88,34 @@ function positionItem(item, e, area) {
 function selectItem(item) {
     document.querySelectorAll('.dropped-item').forEach(item => {
         item.classList.remove('selected-item');
-        item.querySelectorAll('.circle, .rectangle').forEach(part => part.classList.remove('selected-item'));
+        item.querySelectorAll('.circle, .rectangle, .battery1, .battery2, .rectangle2, .trapezoid').forEach(part => part.classList.remove('selected-item'));
+        if (item.querySelector('.rotate-circle')) {
+            item.querySelector('.rotate-circle').remove();
+        }
     });
     item.classList.add('selected-item');
-    item.querySelectorAll('.rectangle, .circle').forEach(part => part.classList.add('selected-item'));
+    const rotateCircle = document.createElement('div');
+    rotateCircle.classList.add('rotate-circle');
+    item.appendChild(rotateCircle);
+    rotateItem(item, rotateCircle);
+    if (item.id.startsWith('light-strip') || item.id.startsWith('battery') || item.id.startsWith('speaker')) {
+        item.style.border = 'none';
+    }
+    if (item.id.startsWith('light-strip')) {
+        rotateCircle.style.top = '-27px';
+        rotateCircle.style.transform = 'translateX(30%)';
+    } else if (item.id.startsWith('battery')) {
+        rotateCircle.style.transform = 'translateX(125%)';
+    }
+    item.querySelectorAll('.rectangle, .circle, .battery1, .battery2, .rectangle2, .trapezoid').forEach(part => part.classList.add('selected-item'));
     document.querySelectorAll('.movement > div').forEach(div => {
         div.style.display = 'none';
     });
+    if (item.id.startsWith('speaker')) {
+        document.getElementById('movement-title').textContent = "Sound";
+    } else {
+        document.getElementById('movement-title').textContent = "Movement";
+    }
     let baseId = item.id;
     if (baseId.includes('copy')) {
         baseId = item.id.split('-').slice(0, -2).join('-');
@@ -106,6 +127,50 @@ function selectItem(item) {
         movementElement.style.display = 'block';
     }
     loadItemSelections(item.id);
+}
+
+function rotateItem(item, rotateCircle) {
+    let rotating = false;
+    let ogAngle = 0;
+    rotateCircle.addEventListener('mousedown', function(e) {
+        rotating = true;
+        const rect = item.getBoundingClientRect();
+        const centerX = rect.left+rect.width/2;
+        const centerY = rect.top+rect.height/2;
+        const xVal = e.clientX;
+        const yVal = e.clientY;
+        ogAngle = Math.atan2(yVal-centerY, xVal-centerX) - getCurrAngle(item);
+        e.preventDefault();
+    });
+    document.addEventListener('mousemove', function(e) {
+        if (rotating) {
+            const rect = item.getBoundingClientRect();
+            const centerX = rect.left+rect.width/2;
+            const centerY = rect.top+rect.height/2;
+            const xVal = e.clientX;
+            const yVal = e.clientY;
+            const currAngle = Math.atan2(yVal-centerY, xVal-centerX);
+            const rotationAngle = currAngle - ogAngle;
+            item.style.transform = `rotate(${rotationAngle*(180/Math.PI)}deg)`;
+        }
+    });
+    document.addEventListener('mouseup', function() {
+        rotating = false;
+    });
+}
+function getCurrAngle(item) {
+    const style = window.getComputedStyle(item);
+    let transform;
+    if (style.transform) {
+        transform = style.transform;
+    } else {
+        transform = 'none';
+    }
+    if (transform == 'none') {
+        return 0;
+    }
+    const matrix = transform.replace('matrix(', '').replace(')', '').split(', ');
+    return Math.atan2(parseFloat(matrix[1]),parseFloat(matrix[0]));
 }
 
 //saving and loading item selections/customizations
@@ -258,8 +323,22 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     //delete item
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Delete') {
-            deleteItem();
+        const selectedItem = document.querySelector('.dropped-item.selected-item');
+        if (document.activeElement.id.startsWith('custom-input')) {
+            return;
+        }
+        if (selectedItem) {
+            if (e.key == 'Delete' || e.key == 'Backspace') {
+                deleteItem();
+            } else if (e.key == 'ArrowUp') {
+                selectedItem.style.top = `${parseInt(selectedItem.style.top)-10}px`;
+            } else if (e.key == 'ArrowDown') {
+                selectedItem.style.top = `${parseInt(selectedItem.style.top)+10}px`;
+            } else if (e.key == 'ArrowLeft') {
+                selectedItem.style.left = `${parseInt(selectedItem.style.left)-10}px`;
+            } else if (e.key == 'ArrowRight') {
+                selectedItem.style.left = `${parseInt(selectedItem.style.left)+10}px`;
+            }
         }
     });
     //user input for popup
@@ -278,6 +357,14 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             document.getElementById("continue-button").disabled = true;
         }
+    });
+    //info popup
+    document.querySelector('.popup-info').style.display = 'none';
+    document.getElementById('info-button').addEventListener('click', function() {
+        document.querySelector('.popup-info').style.display = 'block';
+    });
+    document.getElementById('close-info').addEventListener('click', function() {
+        document.querySelector('.popup-info').style.display = 'none';
     });
 });
 

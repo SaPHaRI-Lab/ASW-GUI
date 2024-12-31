@@ -4,16 +4,16 @@
 <body>
   <div class="popup">
     <div class="popup-instructions">
-    <h2>Instructions</h2>
-    <p id="popup-text"><br>Welcome to the Affect-Sensing Wearable graphical user interface (GUI)!</br><br>Please drag & drop features from the left sidebar onto the central jacket image based on the video you have watched.</br><br>Before beginning, please enter your participant number and video code below:</br></p>
-    <div class="popup-identifiers">
-      <label for="participant1" id="pNum1">Participant #:</label>
-      <input type="text" id="participant1"/>
-      <label for="videoNum1" id="vNum1">Video Code:</label>
-      <input type="text" id="videoNum1"/>
+      <h1 id="popup-title">Instructions</h1>
+      <p id="popup-text"><br>Welcome to the Affect-Sensing Wearable graphical user interface (GUI)!</br><br>Please drag & drop features from the left sidebar onto the jacket image based on the video you have watched. You can consider emotional expression and desired social-physical interaction. From the right sidebar, you can make customizations and selections for various actuation methods.</br><br>Before beginning, please enter your participant number and video code below:</br></p>
+      <div class="popup-identifiers">
+        <label for="participant1" id="pNum1">Participant #:</label>
+        <input type="text" id="participant1"/>
+        <label for="videoNum1" id="vNum1">Video Code:</label>
+        <input type="text" id="videoNum1"/>
+      </div>
+      <button id="continue-button" disabled onclick="continueToGUI()">Continue</button>
     </div>
-    <button id="continue-button" disabled onclick="continueToGUI()">Continue</button>
-  </div>
   </div>
   <div class="container">
     <div class="box">
@@ -24,7 +24,13 @@
         <button id="front-view" onclick="switchView()" style="display: none;">Switch to Front</button>
       </div>
     </div>
+    <div class="popup-info">
+      <button id="close-info">x</button>
+      <h1 id="info-title">Instructions</h1>
+      <p id="info-text">Drag & drop features from the left sidebar onto the jacket image based on the video you have watched. You can consider emotional expression and desired social-physical interaction. From the right sidebar, you can make customizations and selections for various actuation methods.</p>
+    </div>
     <div class="sidebar">
+      <button id="info-button">?</button>
       <div class="identifiers">
         <label for="participant" id="pNum">Participant #:</label>
         <input type="text" id="participant"/>

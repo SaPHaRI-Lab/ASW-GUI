@@ -1,10 +1,10 @@
 # Affect Sensing Wearable GUI
 This is the graphical user interface (GUI) to be used in the ASW user study. The goal is for participants to utilize the GUI to design different actuation methods for a wearable after watching an emotion-eliciting video. There are customizable options that show different actuation methods to convey various interpretations of emotions.
 ## Instructions to run the GUI
-1. install Node.js (including npm) from this link: https://nodejs.org/en or check if they're already installed through typing "node -v" and "npm -v" in your terminal
+1. Install Node.js (including npm) from this link: https://nodejs.org/en or check if they're already installed through typing "node -v" and "npm -v" in your terminal
 2. Navigate to or make sure that you are in the project folder in your terminal (cd to it if not)
 3. Type "npm install express" in your terminal
 4. Run the server by typing "node server.js" in your terminal
 5. When you see this message "Server is running on http://localhost:3000" in your terminal, paste this link into your web browser to get to the GUI: http://localhost:3000
 
-If these steps don't work to run the GUI, drag the "index.html" file onto your desktop and double click on it to open it in your browser locally
+*If these steps don't work to run the GUI, drag the "index.html" file onto your desktop and double click on it to open it in your browser locally
