@@ -7,4 +7,4 @@ This is the graphical user interface (GUI) to be used in the ASW user study. The
 4. Run the server by typing "node server.js" in your terminal
 5. When you see this message "Server is running on http://localhost:3000" in your terminal, paste this link into your web browser to get to the GUI: http://localhost:3000
 
-*If these steps don't work to run the GUI, drag the "index.html" file onto your desktop and double click on it to open it in your browser locally
+*If these steps don't work to run the GUI, drag the "index.html" file onto your desktop and double click on it to open it in your browser

@@ -45,6 +45,10 @@ function drop(e) {
     var data = e.dataTransfer.getData("text");
     const item = document.getElementById(data);
     const dropArea = document.getElementById('jacketbox');
+
+    const restrictedColor = 'rgb(230, 230, 230)';
+
+
     const alreadyDroppedItem = dropArea.querySelector(`#${data}`);
     if (alreadyDroppedItem) {
         positionItem(alreadyDroppedItem, e, dropArea);
@@ -54,8 +58,27 @@ function drop(e) {
         clonedItem.id = uniqueId;
         clonedItem.className = item.className + ' dropped-item';
         clonedItem.style.cssText = item.style.cssText;
-        positionItem(clonedItem, e, dropArea);
+        /*if (clonedItem.id.startsWith('light-ind')) {
+            clonedItem.style.backgroundColor = defaultColor;
+            clonedItem.setAttribute('data-flashing-color', defaultColor);
+        } else if (clonedItem.id.startsWith('light-strip')) {
+            clonedItem.querySelectorAll('.circle, .rectangle').forEach(part => {
+                part.style.backgroundColor = defaultColor;
+            });
+            clonedItem.setAttribute('data-flashing-color', defaultColor);
+        }*/
         dropArea.appendChild(clonedItem);
+        positionItem(clonedItem, e, dropArea);
+        /*if (clonedItem.id.startsWith('light-ind')) {
+            //document.querySelector('input[name="item-movement"][value="Flash ind"]').checked = true;
+            //selectedColor = 'grey';
+            flashAnimation(clonedItem);
+        } else if (clonedItem.id.startsWith('light-strip')) {
+            //document.querySelector('input[name="item-movement"][value="Flash str"]').checked = true;
+            //selectedColor = 'grey';
+            flashAnimation(clonedItem);
+        }*/
+
         clonedItem.addEventListener('click', function() {
             selectItem(clonedItem);
         });
@@ -70,16 +93,22 @@ function drop(e) {
 
 function positionItem(item, e, area) {
     const rect = area.getBoundingClientRect();
-    const offsetX = -345;
-    const offsetY = -30;
-    const xVal = e.clientX-rect.left-offsetX;
-    const yVal = e.clientY-rect.top-offsetY;
+    //const offsetX = -345;
+    //const offsetY = -30;
+    const xVal = e.clientX-rect.left-item.offsetWidth/2;//-offsetX;
+    const yVal = e.clientY-rect.top-item.offsetHeight/2;//-offsetY;
     item.style.position = 'absolute';
     item.style.left = `${xVal}px`;
     item.style.top = `${yVal}px`;
     item.style.zIndex = '10';
-    if (item == '.light-strip') {
-        item.style.left='10px';
+    if (item.id.startsWith('light-strip')) {
+        item.style.left=`${xVal-10}px`;
+    } else if (item.id.startsWith('battery')) {
+        item.style.left=`${xVal-30}px`;
+        item.style.top=`${yVal-10}px`;
+    } else if (item.id.startsWith('fur-patch')) {
+        item.style.left=`${xVal-20}px`;
+        item.style.top=`${yVal-20}px`;
     }
     item.x = xVal;
     item.y = yVal;
@@ -88,7 +117,7 @@ function positionItem(item, e, area) {
 function selectItem(item) {
     document.querySelectorAll('.dropped-item').forEach(item => {
         item.classList.remove('selected-item');
-        item.querySelectorAll('.circle, .rectangle, .battery1, .battery2, .rectangle2, .trapezoid').forEach(part => part.classList.remove('selected-item'));
+        item.querySelectorAll('.circle, .rectangle, .battery1, .battery2, .rectangle2, .trapezoid, .fur1, .fur2').forEach(part => part.classList.remove('selected-item'));
         if (item.querySelector('.rotate-circle')) {
             item.querySelector('.rotate-circle').remove();
         }
@@ -98,7 +127,7 @@ function selectItem(item) {
     rotateCircle.classList.add('rotate-circle');
     item.appendChild(rotateCircle);
     rotateItem(item, rotateCircle);
-    if (item.id.startsWith('light-strip') || item.id.startsWith('battery') || item.id.startsWith('speaker')) {
+    if (item.id.startsWith('light-strip') || item.id.startsWith('battery') || item.id.startsWith('speaker') || item.id.startsWith('fur-patch')) {
         item.style.border = 'none';
     }
     if (item.id.startsWith('light-strip')) {
@@ -106,8 +135,10 @@ function selectItem(item) {
         rotateCircle.style.transform = 'translateX(30%)';
     } else if (item.id.startsWith('battery')) {
         rotateCircle.style.transform = 'translateX(125%)';
+    } else if (item.id.startsWith('fur-patch')) {
+        rotateCircle.style.transform = 'translateX(100%)';
     }
-    item.querySelectorAll('.rectangle, .circle, .battery1, .battery2, .rectangle2, .trapezoid').forEach(part => part.classList.add('selected-item'));
+    item.querySelectorAll('.rectangle, .circle, .battery1, .battery2, .rectangle2, .trapezoid, .fur1, .fur2').forEach(part => part.classList.add('selected-item'));
     document.querySelectorAll('.movement > div').forEach(div => {
         div.style.display = 'none';
     });
@@ -228,7 +259,7 @@ function resetUserInput() {
 
 let flashInterval = null;
 const flashingItems = new Set();
-let currSpeed = 300;
+let currSpeed = null;
 let selectedColor = null;
 const defaultColor = 'grey';
 
@@ -248,7 +279,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     other.style.backgroundColor = transparent;
                 }
                 selectedItem.style.backgroundColor = selectedColor;
-                selectedItem.querySelectorAll('.circle, .rectangle').forEach(part => {
+                selectedItem.querySelectorAll('.circle, .rectangle, .battery1, .battery2, .rectangle2, .trapezoid, .fur1, .fur2').forEach(part => {
                     part.style.backgroundColor = selectedColor;
                 });
                 if (flashingItems.has(selectedItem)) {
@@ -264,30 +295,68 @@ document.addEventListener('DOMContentLoaded', function() {
     output.innerHTML = slider.value;
     slider.oninput = function() {
         output.innerHTML = this.value;
-        currSpeed = this.value * 10;
+        //currSpeed = this.value * 10;
     }
     //saving radio button selection
     document.querySelectorAll('input[name="item-movement"]').forEach(radio => {
         radio.addEventListener('change', function() {
             const selectedItem = document.querySelector('.dropped-item.selected-item');
             if (selectedItem) {
-                saveItemSelections(selectedItem.id, this.value, document.getElementById("speed-range").value, document.getElementById("custom-input").value);
+                const sliderVal = document.getElementById("speed-range").value;
+                saveItemSelections(selectedItem.id, this.value, sliderVal, document.getElementById("custom-input").value);
                 if (radio.value.includes('Light on')) {
                     stopFlash(selectedItem);
                 } else if (radio.value.includes('Flash')) {
-                    currSpeed = 200;
+                    updateSpeed(sliderVal);
                     flashAnimation(selectedItem);
+                    document.getElementById("speed-range").addEventListener('input', function() {
+                        const currMovement = document.querySelector('input[name="item-movement"]:checked');
+                        if (currMovement && currMovement.value.includes('Light on')) {
+                            stopFlash(selectedItem);
+                            return;
+                        }
+                        updateSpeed(this.value);
+                        flashAnimation(selectedItem);
+                    });
                 } else if (radio.value.includes('Trickle up')) {
-                    currSpeed = 300;
+                    updateSpeed(sliderVal);
                     flashAnimation(selectedItem, 'trickle-up');
+                    document.getElementById("speed-range").addEventListener('input', function() {
+                        const currMovement = document.querySelector('input[name="item-movement"]:checked');
+                        if (currMovement && currMovement.value.includes('Light on')) {
+                            stopFlash(selectedItem);
+                            return;
+                        }
+                        updateSpeed(this.value);
+                        flashAnimation(selectedItem, 'trickle-up');
+                    });
                 } else if (radio.value.includes('Trickle down')) {
-                    currSpeed = 300;
+                    updateSpeed(sliderVal);
                     flashAnimation(selectedItem, 'trickle-down');
+                    document.getElementById("speed-range").addEventListener('input', function() {
+                        const currMovement = document.querySelector('input[name="item-movement"]:checked');
+                        if (currMovement && currMovement.value.includes('Light on')) {
+                            stopFlash(selectedItem);
+                            return;
+                        }
+                        updateSpeed(this.value);
+                        flashAnimation(selectedItem, 'trickle-down');
+                    });
                 } else if (radio.value.includes('Random fl')) {
-                    currSpeed = 200;
+                    updateSpeed(sliderVal);
                     flashAnimation(selectedItem, 'random-fl');
+                    document.getElementById("speed-range").addEventListener('input', function() {
+                        const currMovement = document.querySelector('input[name="item-movement"]:checked');
+                        if (currMovement && currMovement.value.includes('Light on')) {
+                            stopFlash(selectedItem);
+                            return;
+                        }
+                        updateSpeed(this.value);
+                        flashAnimation(selectedItem, 'random-fl');
+                    });
                 }
                 selectedItem.radioSelection = this.value;
+                selectedItem.speed = sliderVal;
             }
         });
     });
@@ -319,6 +388,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             saveItemSelections(selectedItem.id, radioValue, this.value, document.getElementById("custom-input").value);
             selectedItem.speed = this.value;
+            updateSpeed(this.value);
         }
     });
     //delete item
@@ -367,6 +437,20 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelector('.popup-info').style.display = 'none';
     });
 });
+
+function updateSpeed(sliderVal) {
+    if (sliderVal == 1) {
+        currSpeed = 700;
+    } else if (sliderVal == 2) {
+        currSpeed = 550;
+    } else if (sliderVal == 3) {
+        currSpeed = 400;
+    } else if (sliderVal == 4) {
+        currSpeed = 250;
+    } else if (sliderVal == 5) {
+        currSpeed = 90;
+    }
+}
 
 function flashAnimation(item, flashPattern) {
     flashingItems.add(item);
@@ -472,12 +556,14 @@ function duplicate() {
         clonedItem.id = `${tempId}-copy-${Date.now()}`;
         clonedItem.className = selectedItem.className + ' dropped-item';
         clonedItem.style.cssText = selectedItem.style.cssText;
-        const rect = selectedItem.getBoundingClientRect();
-        clonedItem.style.position = 'absolute';
-        clonedItem.style.left = `${rect.left+10}px`;
-        clonedItem.style.top = `${rect.top+10}px`;
-        clonedItem.style.zIndex = '10';
         const dropArea = document.getElementById('jacketbox');
+        const rect = selectedItem.getBoundingClientRect();
+        const xVal = rect.left-dropArea.offsetLeft+10;
+        const yVal = rect.top-dropArea.offsetTop+10;
+        clonedItem.style.position = 'absolute';
+        clonedItem.style.left = `${xVal}px`;
+        clonedItem.style.top = `${yVal}px`;
+        clonedItem.style.zIndex = '10';
         dropArea.appendChild(clonedItem);
         if (currView === 'front') {
             frontItems.push(clonedItem);
@@ -491,15 +577,15 @@ function duplicate() {
             clonedItem.speed = ogCustomizations.sliderValue;
             clonedItem.userinput = ogCustomizations.userInput;
             clonedItem.color = selectedColor;
-            clonedItem.x = rect.left+10;
-            clonedItem.y = rect.top+10; //maybe double check the coords
+            clonedItem.x = xVal;
+            clonedItem.y = yVal; //maybe double check the coords
         } else {
             clonedItem.radioSelection = null;
             clonedItem.speed = null;
             clonedItem.userinput = null;
             clonedItem.color = null;
-            clonedItem.x = rect.left+10;
-            clonedItem.y = rect.top+10;
+            clonedItem.x = xVal;
+            clonedItem.y = yVal;
         }
         clonedItem.addEventListener('click', function() {
             selectItem(clonedItem);
