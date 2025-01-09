@@ -5,15 +5,19 @@ var currView = "front";
 function switchView() {
     const front = document.getElementById('jacket-front');
     const back = document.getElementById('jacket-back');
-    if (front.style.display != 'none') {
+    const jacketCanvas = document.getElementById('jacketCanvas');
+    const jacketCtx = jacketCanvas.getContext('2d');
+    if (currView == "front") {//front.style.display != 'none') {
         for (let i = 0; i < frontItems.length; i++) {
             frontItems[i].style.display = 'none';
         }
         for (let i = 0; i < backItems.length; i++) {
             backItems[i].style.display = 'block';
         }
-        front.style.display = 'none';
-        back.style.display = 'block';
+        //front.style.display = 'none';
+        //back.style.display = 'block';
+        jacketCtx.clearRect(0,0,jacketCanvas.width,jacketCanvas.height);
+        jacketCtx.drawImage(back,0,0,jacketCanvas.width,jacketCanvas.height);
         currView = "back";
         document.getElementById('front-view').style.display = 'block';
         document.getElementById('back-view').style.display = 'none';
@@ -24,8 +28,10 @@ function switchView() {
         for (let i = 0; i < backItems.length; i++) {
             backItems[i].style.display = 'none';
         }
-        front.style.display = 'block';
-        back.style.display = 'none';
+        //front.style.display = 'block';
+        //back.style.display = 'none';
+        jacketCtx.clearRect(0,0,jacketCanvas.width,jacketCanvas.height);
+        jacketCtx.drawImage(front,0,0,jacketCanvas.width,jacketCanvas.height);
         currView = "front";
         document.getElementById('back-view').style.display = 'block';
         document.getElementById('front-view').style.display = 'none';
@@ -37,7 +43,6 @@ function dragOver(e) {
     e.preventDefault();
 }
 function drag(e) {
-    //e.dataTransfer.setData("text", e.target.id);
     e.dataTransfer.setData("text", document.getElementById(e.target.id).id);
 }
 function drop(e) {
@@ -45,49 +50,57 @@ function drop(e) {
     var data = e.dataTransfer.getData("text");
     const item = document.getElementById(data);
     const dropArea = document.getElementById('jacketbox');
-
-    const restrictedColor = 'rgb(230, 230, 230)';
-
-
     const alreadyDroppedItem = dropArea.querySelector(`#${data}`);
+    const jacketCanvas = document.getElementById('jacketCanvas');
+    const jacketCtx = jacketCanvas.getContext('2d');
+    var imgData = jacketCtx.getImageData(e.offsetX, e.offsetY, 1, 1);
+    var rgba = imgData.data;
     if (alreadyDroppedItem) {
-        positionItem(alreadyDroppedItem, e, dropArea);
-    } else {
-        const clonedItem = item.cloneNode(true);
-        const uniqueId = `${data}-${Date.now()}`;
-        clonedItem.id = uniqueId;
-        clonedItem.className = item.className + ' dropped-item';
-        clonedItem.style.cssText = item.style.cssText;
-        /*if (clonedItem.id.startsWith('light-ind')) {
-            clonedItem.style.backgroundColor = defaultColor;
-            clonedItem.setAttribute('data-flashing-color', defaultColor);
-        } else if (clonedItem.id.startsWith('light-strip')) {
-            clonedItem.querySelectorAll('.circle, .rectangle').forEach(part => {
-                part.style.backgroundColor = defaultColor;
-            });
-            clonedItem.setAttribute('data-flashing-color', defaultColor);
-        }*/
-        dropArea.appendChild(clonedItem);
-        positionItem(clonedItem, e, dropArea);
-        /*if (clonedItem.id.startsWith('light-ind')) {
-            //document.querySelector('input[name="item-movement"][value="Flash ind"]').checked = true;
-            //selectedColor = 'grey';
-            flashAnimation(clonedItem);
-        } else if (clonedItem.id.startsWith('light-strip')) {
-            //document.querySelector('input[name="item-movement"][value="Flash str"]').checked = true;
-            //selectedColor = 'grey';
-            flashAnimation(clonedItem);
-        }*/
-
-        clonedItem.addEventListener('click', function() {
-            selectItem(clonedItem);
-        });
-        if (currView == "front") {
-            frontItems.push(clonedItem);
-        } else if (currView == "back") {
-            backItems.push(clonedItem);
+        if (rgba[3] !== 0) {
+            positionItem(alreadyDroppedItem, e, dropArea);
+        } else {
+            return;
         }
-        selectItem(clonedItem);
+    } else {
+        if (rgba[3] !== 0) { //make sure the pixel under the drop isn't transparent
+            const clonedItem = item.cloneNode(true);
+            const uniqueId = `${data}-${Date.now()}`;
+            clonedItem.id = uniqueId;
+            clonedItem.className = item.className + ' dropped-item';
+            clonedItem.style.cssText = item.style.cssText;
+            /*if (clonedItem.id.startsWith('light-ind')) {
+                clonedItem.style.backgroundColor = defaultColor;
+                clonedItem.setAttribute('data-flashing-color', defaultColor);
+            } else if (clonedItem.id.startsWith('light-strip')) {
+                clonedItem.querySelectorAll('.circle, .rectangle').forEach(part => {
+                    part.style.backgroundColor = defaultColor;
+                });
+                clonedItem.setAttribute('data-flashing-color', defaultColor);
+            }*/
+            dropArea.appendChild(clonedItem);
+            positionItem(clonedItem, e, dropArea);
+            /*if (clonedItem.id.startsWith('light-ind')) {
+                //document.querySelector('input[name="item-movement"][value="Flash ind"]').checked = true;
+                //selectedColor = 'grey';
+                flashAnimation(clonedItem);
+            } else if (clonedItem.id.startsWith('light-strip')) {
+                //document.querySelector('input[name="item-movement"][value="Flash str"]').checked = true;
+                //selectedColor = 'grey';
+                flashAnimation(clonedItem);
+            }*/
+
+            clonedItem.addEventListener('click', function() {
+                selectItem(clonedItem);
+            });
+            if (currView == "front") {
+                frontItems.push(clonedItem);
+            } else if (currView == "back") {
+                backItems.push(clonedItem);
+            }
+            selectItem(clonedItem);
+        } else {
+            return;
+        }
     }
 }
 
@@ -264,6 +277,11 @@ let selectedColor = null;
 const defaultColor = 'grey';
 
 document.addEventListener('DOMContentLoaded', function() {
+    //draw jacket image to canvas
+    const jacketCanvas = document.getElementById('jacketCanvas');
+    const jacketCtx = jacketCanvas.getContext('2d');
+    jacketCtx.clearRect(0,0,jacketCanvas.width,jacketCanvas.height);
+    jacketCtx.drawImage(document.getElementById('jacket-front'),0,0,jacketCanvas.width,jacketCanvas.height);
     //color selecting functionality
     const squares = document.querySelectorAll('.square');
     squares.forEach(square => {
@@ -435,6 +453,17 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     document.getElementById('close-info').addEventListener('click', function() {
         document.querySelector('.popup-info').style.display = 'none';
+    });
+    //clicking to deselect
+    document.querySelector('.container').addEventListener('click', function (e) {
+        const selectedItem = document.querySelector('.dropped-item.selected-item');
+        if (selectedItem && e.target != selectedItem && !e.target.closest('.customization')) {
+            selectedItem.classList.remove('selected-item');
+            //document.querySelectorAll('.color, .speed').style.display = 'none';
+        } else if (e.target == selectedItem) {
+            //selectedItem.classList.add();
+            //document.querySelectorAll('.color, .speed').style.display = 'block'; //alter this querySelectorAll '.customization test, etcetc
+        }
     });
 });
 
@@ -610,6 +639,19 @@ function redo() {
 function deleteItem() {
     const selectedItem = document.querySelector('.dropped-item.selected-item');
     if (selectedItem) {
+        if (currView == 'front') {
+            for (let i = 0; i < frontItems.length; i++) {
+                if (frontItems[i].id == selectedItem.id) {
+                    frontItems.splice(i,1);
+                }
+            }
+        } else if (currView == 'back') {
+            for (let i = 0; i < backItems.length; i++) {
+                if (backItems[i].id == selectedItem.id) {
+                    backItems.splice(i,1);
+                }
+            }
+        }
         selectedItem.remove();
     }
 }

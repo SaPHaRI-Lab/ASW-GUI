@@ -1,6 +1,7 @@
 <link rel="stylesheet" href="style.css" />
 <script src="script.js"></script>
 <h1 id="title">Wearable Design</h1>
+<button id="info-button">?</button>
 <body>
   <div class="popup">
     <div class="popup-instructions">
@@ -18,8 +19,9 @@
   <div class="container">
     <div class="box">
       <div class="jacketbox" id="jacketbox">
-        <img src="jacketfront.png" id="jacket-front" draggable="false" ondrop="drop(event)" ondragover="dragOver(event)"/>
+        <img src="jacketfront.png" id="jacket-front" draggable="false" ondrop="drop(event)" ondragover="dragOver(event)" style="display: none;"/>
         <img src="jacketback.png" id="jacket-back" draggable="false" ondrop="drop(event)" ondragover="dragOver(event)" style="display: none;" />
+        <canvas id="jacketCanvas" class="jacket-canvas" width="480" height="550" draggable="false" ondrop="drop(event)" ondragover="dragOver(event)"></canvas>
         <button id="back-view" onclick="switchView()">Switch to Back</button>
         <button id="front-view" onclick="switchView()" style="display: none;">Switch to Front</button>
       </div>
@@ -30,7 +32,7 @@
       <p id="info-text">Drag & drop features from the left sidebar onto the jacket image based on the video you have watched. You can consider emotional expression and desired social-physical interaction. From the right sidebar, you can make customizations and selections for various actuation methods.</p>
     </div>
     <div class="sidebar">
-      <button id="info-button">?</button>
+      <!--<button id="info-button">?</button>-->
       <div class="identifiers">
         <label for="participant" id="pNum">Participant #:</label>
         <input type="text" id="participant"/>
@@ -171,7 +173,7 @@
       </div>
       <div class="custom-user-input">
         <h2 id="custom-title">Write my own:</h2>
-        <textarea id="custom-input" name="item-movement" rows="3" cols="25"></textarea>
+        <textarea id="custom-input" name="item-movement" rows="3" cols="22"></textarea>
     </div>
       <div class="save">
         <button type="button" id="save-button" onclick="saveFile()">Submit</button>
