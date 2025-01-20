@@ -24,6 +24,15 @@
         <canvas id="jacketCanvas" class="jacket-canvas" width="480" height="550" draggable="false" ondrop="drop(event)" ondragover="dragOver(event)"></canvas>
         <button id="back-view" onclick="switchView()">Switch to Back</button>
         <button id="front-view" onclick="switchView()" style="display: none;">Switch to Front</button>
+        <div class="click-create" style="display: none;">
+          <div class="click-item" id="click-fur">Fur Patch</div>
+          <div class="click-item" id="click-light1">Individual Light</div>
+          <div class="click-item" id="click-light2">Light Strip</div>
+          <div class="click-item" id="click-battery">Social Battery Display</div>
+          <div class="click-item" id="click-display">Display Screen</div>
+          <div class="click-item" id="click-speaker">Speaker</div>
+          <div class="click-item" id="click-other">Other</div>
+        </div>
       </div>
     </div>
     <div class="popup-info">
@@ -115,16 +124,9 @@
       <div class="color">
         <h2 id="color-title">Color</h2>
         <div class="color-grid" id="color-grid">
-          <div class="square" id="red"></div>
-          <div class="square" id="orange"></div>
-          <div class="square" id="yellow"></div>
-          <div class="square" id="green"></div>
-          <div class="square" id="blue"></div>
-          <div class="square" id="purple"></div>
-          <div class="square" id="pink"></div>
-          <div class="square" id="black"></div>
-          <div class="square" id="gray"></div>
-          <div class="square" id="lightyellow"></div>
+          <img src="colorselect.png" id="color-wheel" draggable="false" style="display: none;"/>
+          <canvas id="colorCanvas" class="color-canvas" width="120" height="110" draggable="false"></canvas>
+          <input type="range" min="0" max="10" value="5" class="color-slider" id="color-range">
         </div>
       </div>
       <div class="speed">
@@ -173,7 +175,7 @@
       </div>
       <div class="custom-user-input">
         <h2 id="custom-title">Write my own:</h2>
-        <textarea id="custom-input" name="item-movement" rows="3" cols="22"></textarea>
+        <textarea id="custom-input" name="item-movement" rows="2" cols="22"></textarea>
     </div>
       <div class="save">
         <button type="button" id="save-button" onclick="saveFile()">Submit</button>

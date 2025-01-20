@@ -130,7 +130,7 @@ body {
   padding: 70px;
   position: absolute;
   left: 0;
-  padding-top: 100px;
+  padding-top: 50px;
 }
 
 .option {
@@ -164,7 +164,7 @@ body {
   padding: 120px;
   position: absolute;
   right: 0;
-  padding-top: 100px;
+  padding-top: 95px;
 }
 
 #info-button {
@@ -303,6 +303,29 @@ body {
   position: absolute;
 }
 
+.click-create {
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, auto);
+  gap: 5px;
+  padding: 5px;
+  background-color: rgb(228, 228, 228);
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 250px;
+  height: 150px;
+  text-align: center;
+  z-index: 15;
+  position: absolute;
+}
+.click-item {
+  padding: 10px;
+  background-color: rgb(206, 206, 206);
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-size: 15px;
+}
+
 .color {
   padding-left: 15px;
 }
@@ -326,7 +349,7 @@ body {
   font-weight: lighter;
   color: white;
   font-size: 17px;
-  margin-top: 20px;
+  margin-top: 40px;
   margin-left: 48px;
   margin-bottom: 3px;
   padding: 20px;
@@ -374,7 +397,7 @@ body {
   font-size: 15px;
   color: white;
   width: 40%;
-  margin-top: 50px;
+  margin-top: 35px;
   margin-left: 20px;
 }
 
@@ -420,6 +443,33 @@ body {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 5%;
+}
+
+#colorCanvas {
+  margin-left: 15%;
+}
+
+#color-range {
+  position: absolute;
+  margin-top: 31%;
+  margin-left: 3%;
+  width: 130px;
+}
+
+.color-slider {
+  -webkit-appearance: none;
+  background: linear-gradient(to right, white, lightgray, gray, black);
+  height: 20px;
+}
+
+.color-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 10px;
+  height: 25px;
+  background: transparent;
+  border: 2px solid white;
+  border-radius: 5px;
 }
 
 .square {
@@ -475,7 +525,7 @@ body {
 .light-ind {
   height: 23px;
   width: 23px;
-  background-color: #bbb;
+  background-color: rgba(187, 187, 187, 1);/*#bbb;*/
   border-radius: 50%;
   display: inline-block;
   cursor: grab;

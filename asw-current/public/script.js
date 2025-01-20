@@ -157,8 +157,10 @@ function selectItem(item) {
     });
     if (item.id.startsWith('speaker')) {
         document.getElementById('movement-title').textContent = "Sound";
+        document.getElementById('custom-title').textContent = "Describe the desired sound:";
     } else {
         document.getElementById('movement-title').textContent = "Movement";
+        document.getElementById('custom-title').textContent = "Write my own:";
     }
     let baseId = item.id;
     if (baseId.includes('copy')) {
@@ -275,6 +277,7 @@ const flashingItems = new Set();
 let currSpeed = null;
 let selectedColor = null;
 const defaultColor = 'grey';
+let rgba2 = [];
 
 document.addEventListener('DOMContentLoaded', function() {
     //draw jacket image to canvas
@@ -282,13 +285,22 @@ document.addEventListener('DOMContentLoaded', function() {
     const jacketCtx = jacketCanvas.getContext('2d');
     jacketCtx.clearRect(0,0,jacketCanvas.width,jacketCanvas.height);
     jacketCtx.drawImage(document.getElementById('jacket-front'),0,0,jacketCanvas.width,jacketCanvas.height);
+    //draw color select image to canvas
+    const colorCanvas = document.getElementById('colorCanvas');
+    const colorCtx = colorCanvas.getContext('2d');
+    colorCtx.drawImage(document.getElementById('color-wheel'),0,0,colorCanvas.width,colorCanvas.height);
     //color selecting functionality
-    const squares = document.querySelectorAll('.square');
-    squares.forEach(square => {
-        square.addEventListener('click', () => {
-            squares.forEach(sq => sq.classList.remove('selected-col'));
-            square.classList.add('selected-col');
-            selectedColor = square.id;
+    colorCanvas.addEventListener('click', function(e) {
+        var imgData = colorCtx.getImageData(e.offsetX, e.offsetY, 1, 1);
+        var rgba = imgData.data;
+        const rect = colorCanvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        if (rgba[3] !== 0) { //if click isnt on transparent area of image
+            selectedColor = `rgba(${rgba[0]}, ${rgba[1]}, ${rgba[2]}, ${rgba[3] / 255})`;
+            rgba2[0] = rgba[0];
+            rgba2[1] = rgba[1];
+            rgba2[2] = rgba[2];
             const selectedItem = document.querySelector('.dropped-item.selected-item');
             const other = document.querySelector('.other');
             if (selectedItem) {
@@ -304,6 +316,103 @@ document.addEventListener('DOMContentLoaded', function() {
                     selectedItem.setAttribute('data-flashing-color', selectedColor);
                 }
                 selectedItem.color = selectedColor;
+                //let lighterColor = `rgba(${rgba[0]+20}, ${rgba[1]+20}, ${rgba[2]+20}, ${rgba[3] / 255})`;
+                document.getElementById('color-range').style.background = `linear-gradient(to right, white, ${selectedColor}, black)`;
+            }
+            colorCtx.clearRect(0,0,colorCanvas.width,colorCanvas.height);
+            colorCtx.drawImage(document.getElementById('color-wheel'),0,0,colorCanvas.width,colorCanvas.height);
+            colorCtx.beginPath();
+            colorCtx.arc(x, y, 6, 0, 2 * Math.PI);
+            colorCtx.lineWidth = 2;
+            colorCtx.strokeStyle = 'black';
+            colorCtx.stroke();
+        }
+    });
+    document.getElementById('color-range').addEventListener('input', function() {
+        selectedColor = updateShade(this.value);
+        const selectedItem = document.querySelector('.dropped-item.selected-item');
+        const other = document.querySelector('.other');
+        if (selectedItem) {
+            if (selectedItem == other) {
+                other.style.borderBottomColor = selectedColor;
+                other.style.backgroundColor = transparent;
+            }
+            selectedItem.style.backgroundColor = selectedColor;
+            selectedItem.querySelectorAll('.circle, .rectangle, .battery1, .battery2, .rectangle2, .trapezoid, .fur1, .fur2').forEach(part => {
+                part.style.backgroundColor = selectedColor;
+            });
+            if (flashingItems.has(selectedItem)) {
+                selectedItem.setAttribute('data-flashing-color', selectedColor);
+            }
+            selectedItem.color = selectedColor;
+        }
+    });
+    let clickOpen = false;
+    //create item when clicking jacket
+    jacketCanvas.addEventListener('click', function(e) {
+        var imgData = jacketCtx.getImageData(e.offsetX, e.offsetY, 1, 1);
+        var rgba = imgData.data;
+        if (!clickOpen && rgba[3] !== 0) {
+            const clickItem = document.querySelector('.click-create');
+            const rect = jacketCanvas.getBoundingClientRect();
+            const x = e.clientX-rect.left+170;
+            const y = e.clientY-rect.top+15;
+            clickItem.style.left = `${x}px`;
+            clickItem.style.top = `${y}px`;
+            clickItem.style.display = 'grid';
+            clickOpen = true;
+        } else {
+            clickItem.style.display = 'none';
+            clickOpen = false;
+        }
+        e.stopPropagation();
+    });
+    document.addEventListener('click', function(e) {
+        if (!document.querySelector('.click-create').contains(e.target) && clickOpen == true) {
+            document.querySelector('.click-create').style.display = 'none';
+            clickOpen = false;
+        }
+    });
+    document.querySelectorAll('.click-item').forEach(item => {
+        const dropArea = document.getElementById('jacketbox');
+        let clickedItem = null;
+        item.addEventListener('click', function(e) {
+            if (e.target.id == 'click-fur') {
+                const furNodeList = document.querySelectorAll('.fur-patch');
+                const furClonedNodes = [];
+                for (let i = 0; i < furNodeList.length; i++) {
+                    const furClonedNode = furNodeList[i].cloneNode(true); // Clone the node (including children)
+                    furClonedNodes.push(furClonedNode);
+                }
+                //clickedItem = document.querySelectorAll('.fur-patch').cloneNode(true);
+                //clickedItem.id = `${e.target.id}-${Date.now()}`;
+                //clickedItem.className = document.querySelectorAll('.fur-patch').className + ' dropped-item';
+                //clickedItem.style.cssText = document.querySelectorAll('.fur-patch').style.cssText;
+                //dropArea.appendChild(furClonedNodes);
+                //positionItem(furClonedNodes, e, dropArea);
+                furClonedNodes.forEach(furClonedNode => {
+                    dropArea.appendChild(furClonedNode); // Append each clone to the dropArea
+                    positionItem(furClonedNode, e, dropArea); // Pass the individual node to positionItem
+                });
+            } else if (e.target.id == 'click-light1') {
+                clickedItem = document.getElementById('light-ind').cloneNode(true);
+                clickedItem.id = `${e.target.id}-${Date.now()}`;
+                clickedItem.className = document.getElementById('light-ind').className + ' dropped-item';
+                clickedItem.style.cssText = document.getElementById('light-ind').style.cssText;
+                dropArea.appendChild(clickedItem);
+                positionItem(clickedItem, e, dropArea);
+                //clickedItem.style.left = `${e.clientX-rect.left+170}px`;
+                //clickedItem.style.top = `${e.clientY-rect.top+15}px`;
+            } else if (e.target.id == 'click-light2') {
+
+            } else if (e.target.id == 'click-battery') {
+
+            } else if (e.target.id == 'click-display') {
+
+            } else if (e.target.id == 'click-speaker') {
+
+            } else if (e.target.id == 'click-other') {
+
             }
         });
     });
@@ -455,9 +564,9 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelector('.popup-info').style.display = 'none';
     });
     //clicking to deselect
-    document.querySelector('.container').addEventListener('click', function (e) {
+    document.querySelector('.container').addEventListener('click', function(e) {
         const selectedItem = document.querySelector('.dropped-item.selected-item');
-        if (selectedItem && e.target != selectedItem && !e.target.closest('.customization')) {
+        if (selectedItem && e.target != selectedItem && !e.target.closest('.customization') && !e.target.closest('.rotate-circle')) {
             selectedItem.classList.remove('selected-item');
             //document.querySelectorAll('.color, .speed').style.display = 'none';
         } else if (e.target == selectedItem) {
@@ -466,6 +575,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+function updateShade(sliderVal) {
+    let color2 = null;
+    let ratio = null;
+    if (sliderVal <= 5) {
+        ratio = sliderVal/5;
+        color2 = `rgba(${Math.round(255+(rgba2[0]-255)*ratio)}, ${Math.round(255+(rgba2[1]-255)*ratio)}, ${Math.round(255+(rgba2[2]-255)*ratio)}, 1)`.replace(/\s+/g, '');
+    } else {
+        ratio = (sliderVal-5)/5;
+        color2 = `rgba(${Math.round(rgba2[0]*(1-ratio))}, ${Math.round(rgba2[1]*(1-ratio))}, ${Math.round(rgba2[2]*(1-ratio))}, 1)`.replace(/\s+/g, '');
+    }
+    return color2;
+}
 
 function updateSpeed(sliderVal) {
     if (sliderVal == 1) {
@@ -479,6 +601,18 @@ function updateSpeed(sliderVal) {
     } else if (sliderVal == 5) {
         currSpeed = 90;
     }
+}
+
+//normalize/reformat color string so rgba comparison works
+function normalizeColorStr(colorStr) {
+    colorStr = colorStr.replace(/\s+/g, '').toLowerCase();
+    if (colorStr.startsWith('rgb(') && !colorStr.startsWith('rgba')) {
+        const rgba = colorStr.match(/\d+/g);
+        if (rgba && rgba.length == 3) {
+            return `rgba(${rgba[0]},${rgba[1]},${rgba[2]},1)`;
+        }
+    }
+    return colorStr;
 }
 
 function flashAnimation(item, flashPattern) {
@@ -527,13 +661,13 @@ function flashAnimation(item, flashPattern) {
         }
         flashInterval = setInterval(() => {
             flashingItems.forEach(flashingItem => {
-                let flashingColor = flashingItem.getAttribute('data-flashing-color');
+                let flashingColor = normalizeColorStr(flashingItem.getAttribute('data-flashing-color'));
                 let currColor = null;
                 if (!flashingColor) {
                     flashingColor = defaultColor;
                 }
                 if (flashingItem.classList.contains('light-ind')) {
-                    currColor = flashingItem.style.backgroundColor;
+                    currColor = normalizeColorStr(flashingItem.style.backgroundColor);
                     if (currColor == flashingColor) {
                         flashingItem.style.backgroundColor = '#bbb';
                     } else {
@@ -541,7 +675,7 @@ function flashAnimation(item, flashPattern) {
                     }
                 } else {
                     flashingItem.querySelectorAll('.rectangle, .circle').forEach(part => {
-                        currColor = part.style.backgroundColor;
+                        currColor = normalizeColorStr(part.style.backgroundColor);
                         if (currColor == flashingColor) {
                             part.style.backgroundColor = '#bbb';
                         } else {
@@ -642,13 +776,13 @@ function deleteItem() {
         if (currView == 'front') {
             for (let i = 0; i < frontItems.length; i++) {
                 if (frontItems[i].id == selectedItem.id) {
-                    frontItems.splice(i,1);
+                    frontItems[i].id = "DELETED"+frontItems[i].id;//frontItems.splice(i,1);
                 }
             }
         } else if (currView == 'back') {
             for (let i = 0; i < backItems.length; i++) {
                 if (backItems[i].id == selectedItem.id) {
-                    backItems.splice(i,1);
+                    backItems[i].id = "DELETED"+backItems[i].id;//backItems.splice(i,1);
                 }
             }
         }
@@ -669,10 +803,10 @@ function saveFile() {
     var csvFile = "data:text/csv;charset=utf-8,";
     csvFile += "Jacket Side,Item ID,Customization,Speed,User Input,Color,X Position,Y Position\n";
     for (let i = 0; i < frontItems.length; i++) { //items on jacket front  selectedItem.userinput = document.getElementById(selectedItem.custom-1).value;
-        csvFile += `front,${frontItems[i].id},${frontItems[i].radioSelection},${frontItems[i].speed},${frontItems[i].userinput},${frontItems[i].color},${frontItems[i].x},${frontItems[i].y}\n`;
+        csvFile += `front,${frontItems[i].id},${frontItems[i].radioSelection},${frontItems[i].speed},${frontItems[i].userinput},"${frontItems[i].color}",${frontItems[i].x},${frontItems[i].y}\n`;
     }
     for (let i = 0; i < backItems.length; i++) { //items on jacket back
-        csvFile += `back,${backItems[i].id},${backItems[i].radioSelection},${backItems[i].speed},${backItems[i].userinput},${backItems[i].color},${backItems[i].x},${backItems[i].y}\n`;
+        csvFile += `back,${backItems[i].id},${backItems[i].radioSelection},${backItems[i].speed},${backItems[i].userinput},"${backItems[i].color}",${backItems[i].x},${backItems[i].y}\n`;
     }
     const encodedUri = encodeURI(csvFile);
     const link = document.createElement("a");
