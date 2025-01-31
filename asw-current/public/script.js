@@ -379,40 +379,81 @@ document.addEventListener('DOMContentLoaded', function() {
         item.addEventListener('click', function(e) {
             if (e.target.id == 'click-fur') {
                 const furNodeList = document.querySelectorAll('.fur-patch');
-                const furClonedNodes = [];
                 for (let i = 0; i < furNodeList.length; i++) {
-                    const furClonedNode = furNodeList[i].cloneNode(true); // Clone the node (including children)
-                    furClonedNodes.push(furClonedNode);
+                    const furClonedNode = furNodeList[i].cloneNode(true);
+                    furClonedNode.id = `${'fur-patch'}-${Date.now()}`;
+                    furClonedNode.className = furClonedNode.className + ' dropped-item';
+                    dropArea.appendChild(furClonedNode);
+                    clickPositionItem(furClonedNode, e, dropArea);
+                    furClonedNode.addEventListener('click', function () {
+                        selectItem(furClonedNode);
+                    });
                 }
-                //clickedItem = document.querySelectorAll('.fur-patch').cloneNode(true);
-                //clickedItem.id = `${e.target.id}-${Date.now()}`;
-                //clickedItem.className = document.querySelectorAll('.fur-patch').className + ' dropped-item';
-                //clickedItem.style.cssText = document.querySelectorAll('.fur-patch').style.cssText;
-                //dropArea.appendChild(furClonedNodes);
-                //positionItem(furClonedNodes, e, dropArea);
-                furClonedNodes.forEach(furClonedNode => {
-                    dropArea.appendChild(furClonedNode); // Append each clone to the dropArea
-                    positionItem(furClonedNode, e, dropArea); // Pass the individual node to positionItem
-                });
             } else if (e.target.id == 'click-light1') {
                 clickedItem = document.getElementById('light-ind').cloneNode(true);
-                clickedItem.id = `${e.target.id}-${Date.now()}`;
+                clickedItem.id = `${'light-ind'}-${Date.now()}`;
                 clickedItem.className = document.getElementById('light-ind').className + ' dropped-item';
-                clickedItem.style.cssText = document.getElementById('light-ind').style.cssText;
                 dropArea.appendChild(clickedItem);
-                positionItem(clickedItem, e, dropArea);
+                clickPositionItem(clickedItem, e, dropArea);
+                clickedItem.addEventListener('click', function () {
+                    selectItem(clickedItem);
+                });
                 //clickedItem.style.left = `${e.clientX-rect.left+170}px`;
                 //clickedItem.style.top = `${e.clientY-rect.top+15}px`;
             } else if (e.target.id == 'click-light2') {
-
+                const lightNodeList = document.querySelectorAll('.light-strip');
+                for (let i = 0; i < lightNodeList.length; i++) {
+                    const lightClonedNode = lightNodeList[i].cloneNode(true);
+                    lightClonedNode.id = `${'light-strip'}-${Date.now()}`;
+                    lightClonedNode.className = lightClonedNode.className + ' dropped-item';
+                    dropArea.appendChild(lightClonedNode);
+                    clickPositionItem(lightClonedNode, e, dropArea);
+                    lightClonedNode.addEventListener('click', function () {
+                        selectItem(lightClonedNode);
+                    });
+                }
             } else if (e.target.id == 'click-battery') {
-
+                const batteryNodeList = document.querySelectorAll('.battery');
+                for (let i = 0; i < batteryNodeList.length; i++) {
+                    const batteryClonedNode = batteryNodeList[i].cloneNode(true);
+                    batteryClonedNode.id = `${'battery'}-${Date.now()}`;
+                    batteryClonedNode.className = batteryClonedNode.className + ' dropped-item';
+                    dropArea.appendChild(batteryClonedNode);
+                    clickPositionItem(batteryClonedNode, e, dropArea);
+                    batteryClonedNode.addEventListener('click', function () {
+                        selectItem(batteryClonedNode);
+                    });
+                }
             } else if (e.target.id == 'click-display') {
-
+                clickedItem = document.getElementById('display').cloneNode(true);
+                clickedItem.id = `${'display'}-${Date.now()}`;
+                clickedItem.className = document.getElementById('display').className + ' dropped-item';
+                dropArea.appendChild(clickedItem);
+                clickPositionItem(clickedItem, e, dropArea);
+                clickedItem.addEventListener('click', function () {
+                    selectItem(clickedItem);
+                });
             } else if (e.target.id == 'click-speaker') {
-
+                const speakerNodeList = document.querySelectorAll('.speaker');
+                for (let i = 0; i < speakerNodeList.length; i++) {
+                    const speakerClonedNode = speakerNodeList[i].cloneNode(true);
+                    speakerClonedNode.id = `${'speaker'}-${Date.now()}`;
+                    speakerClonedNode.className = speakerClonedNode.className + ' dropped-item';
+                    dropArea.appendChild(speakerClonedNode);
+                    clickPositionItem(speakerClonedNode, e, dropArea);
+                    speakerClonedNode.addEventListener('click', function () {
+                        selectItem(speakerClonedNode);
+                    });
+                }
             } else if (e.target.id == 'click-other') {
-
+                clickedItem = document.getElementById('other').cloneNode(true);
+                clickedItem.id = `${'other'}-${Date.now()}`;
+                clickedItem.className = document.getElementById('other').className + ' dropped-item';
+                dropArea.appendChild(clickedItem);
+                clickPositionItem(clickedItem, e, dropArea);
+                clickedItem.addEventListener('click', function () {
+                    selectItem(clickedItem);
+                });
             }
         });
     });
@@ -575,6 +616,27 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+function clickPositionItem(item, e, area) {
+    const rect = area.getBoundingClientRect();
+    const xVal = e.clientX-rect.left-item.offsetWidth/2;
+    const yVal = e.clientY-rect.top-item.offsetHeight/2;
+    item.style.position = 'absolute';
+    item.style.left = `${xVal}px`;
+    item.style.top = `${yVal}px`;
+    item.style.zIndex = '10';
+    if (item.id.startsWith('light-strip')) {
+        item.style.left=`${xVal-10}px`;
+    } else if (item.id.startsWith('battery')) {
+        item.style.left=`${xVal-30}px`;
+        item.style.top=`${yVal-10}px`;
+    } else if (item.id.startsWith('fur-patch')) {
+        item.style.left=`${xVal-20}px`;
+        item.style.top=`${yVal-20}px`;
+    }
+    item.x = xVal;
+    item.y = yVal;
+}
 
 function updateShade(sliderVal) {
     let color2 = null;
