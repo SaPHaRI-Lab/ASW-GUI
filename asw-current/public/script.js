@@ -128,14 +128,32 @@ function positionItem(item, e, area) {
 }
 
 function selectItem(item) {
-    document.querySelectorAll('.dropped-item').forEach(item => {
+    /*document.querySelectorAll('.dropped-item').forEach(item => {
         item.classList.remove('selected-item');
         item.querySelectorAll('.circle, .rectangle, .battery1, .battery2, .rectangle2, .trapezoid, .fur1, .fur2').forEach(part => part.classList.remove('selected-item'));
         if (item.querySelector('.rotate-circle')) {
             item.querySelector('.rotate-circle').remove();
         }
+    });*/
+    document.querySelectorAll('.dropped-item').forEach(el => {
+        el.classList.remove('selected-item');
+        el.querySelectorAll('.fur1, .fur2, .circle, .rectangle, .battery1, .battery2, .rectangle2, .trapezoid')
+          .forEach(part => part.classList.remove('selected-item'));
+        const existingRotateHandle = el.querySelector('.rotate-circle');
+        if (existingRotateHandle) {
+            existingRotateHandle.remove();
+        }
     });
     item.classList.add('selected-item');
+    item.querySelectorAll('.rectangle, .circle, .battery1, .battery2, .rectangle2, .trapezoid, .fur1, .fur2').forEach(part => part.classList.add('selected-item'));
+    /*const rotateCircle = document.createElement('div');
+    rotateCircle.classList.add('rotate-circle');
+    item.appendChild(rotateCircle);
+    rotateItem(item, rotateCircle);*/
+    let existingRotateHandle = item.querySelector('.rotate-circle');
+    if (existingRotateHandle) {
+        existingRotateHandle.remove();
+    }
     const rotateCircle = document.createElement('div');
     rotateCircle.classList.add('rotate-circle');
     item.appendChild(rotateCircle);
@@ -151,7 +169,7 @@ function selectItem(item) {
     } else if (item.id.startsWith('fur-patch')) {
         rotateCircle.style.transform = 'translateX(100%)';
     }
-    item.querySelectorAll('.rectangle, .circle, .battery1, .battery2, .rectangle2, .trapezoid, .fur1, .fur2').forEach(part => part.classList.add('selected-item'));
+    //item.querySelectorAll('.rectangle, .circle, .battery1, .battery2, .rectangle2, .trapezoid, .fur1, .fur2').forEach(part => part.classList.add('selected-item'));
     document.querySelectorAll('.movement > div').forEach(div => {
         div.style.display = 'none';
     });
@@ -655,6 +673,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectedItem = document.querySelector('.dropped-item.selected-item');
         if (selectedItem && e.target != selectedItem && !e.target.closest('.customization') && !e.target.closest('.rotate-circle')) {
             selectedItem.classList.remove('selected-item');
+            selectedItem.querySelectorAll('.circle, .rectangle, .battery1, .battery2, .rectangle2, .trapezoid, .fur1, .fur2').forEach(part => part.classList.remove('selected-item'));
             //document.querySelectorAll('.color, .speed').style.display = 'none';
         } else if (e.target == selectedItem) {
             //selectedItem.classList.add();
