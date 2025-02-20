@@ -7,15 +7,13 @@ function switchView() {
     const back = document.getElementById('jacket-back');
     const jacketCanvas = document.getElementById('jacketCanvas');
     const jacketCtx = jacketCanvas.getContext('2d');
-    if (currView == "front") {//front.style.display != 'none') {
+    if (currView == "front") {
         for (let i = 0; i < frontItems.length; i++) {
             frontItems[i].style.display = 'none';
         }
         for (let i = 0; i < backItems.length; i++) {
             backItems[i].style.display = 'block';
         }
-        //front.style.display = 'none';
-        //back.style.display = 'block';
         jacketCtx.clearRect(0,0,jacketCanvas.width,jacketCanvas.height);
         jacketCtx.drawImage(back,0,0,jacketCanvas.width,jacketCanvas.height);
         currView = "back";
@@ -28,8 +26,6 @@ function switchView() {
         for (let i = 0; i < backItems.length; i++) {
             backItems[i].style.display = 'none';
         }
-        //front.style.display = 'block';
-        //back.style.display = 'none';
         jacketCtx.clearRect(0,0,jacketCanvas.width,jacketCanvas.height);
         jacketCtx.drawImage(front,0,0,jacketCanvas.width,jacketCanvas.height);
         currView = "front";
@@ -128,32 +124,14 @@ function positionItem(item, e, area) {
 }
 
 function selectItem(item) {
-    /*document.querySelectorAll('.dropped-item').forEach(item => {
+    document.querySelectorAll('.dropped-item').forEach(item => {
         item.classList.remove('selected-item');
         item.querySelectorAll('.circle, .rectangle, .battery1, .battery2, .rectangle2, .trapezoid, .fur1, .fur2').forEach(part => part.classList.remove('selected-item'));
         if (item.querySelector('.rotate-circle')) {
             item.querySelector('.rotate-circle').remove();
         }
-    });*/
-    document.querySelectorAll('.dropped-item').forEach(el => {
-        el.classList.remove('selected-item');
-        el.querySelectorAll('.fur1, .fur2, .circle, .rectangle, .battery1, .battery2, .rectangle2, .trapezoid')
-          .forEach(part => part.classList.remove('selected-item'));
-        const existingRotateHandle = el.querySelector('.rotate-circle');
-        if (existingRotateHandle) {
-            existingRotateHandle.remove();
-        }
     });
     item.classList.add('selected-item');
-    item.querySelectorAll('.rectangle, .circle, .battery1, .battery2, .rectangle2, .trapezoid, .fur1, .fur2').forEach(part => part.classList.add('selected-item'));
-    /*const rotateCircle = document.createElement('div');
-    rotateCircle.classList.add('rotate-circle');
-    item.appendChild(rotateCircle);
-    rotateItem(item, rotateCircle);*/
-    let existingRotateHandle = item.querySelector('.rotate-circle');
-    if (existingRotateHandle) {
-        existingRotateHandle.remove();
-    }
     const rotateCircle = document.createElement('div');
     rotateCircle.classList.add('rotate-circle');
     item.appendChild(rotateCircle);
@@ -169,7 +147,7 @@ function selectItem(item) {
     } else if (item.id.startsWith('fur-patch')) {
         rotateCircle.style.transform = 'translateX(100%)';
     }
-    //item.querySelectorAll('.rectangle, .circle, .battery1, .battery2, .rectangle2, .trapezoid, .fur1, .fur2').forEach(part => part.classList.add('selected-item'));
+    item.querySelectorAll('.rectangle, .circle, .battery1, .battery2, .rectangle2, .trapezoid, .fur1, .fur2').forEach(part => part.classList.add('selected-item'));
     document.querySelectorAll('.movement > div').forEach(div => {
         div.style.display = 'none';
     });
@@ -673,11 +651,21 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectedItem = document.querySelector('.dropped-item.selected-item');
         if (selectedItem && e.target != selectedItem && !e.target.closest('.customization') && !e.target.closest('.rotate-circle')) {
             selectedItem.classList.remove('selected-item');
-            selectedItem.querySelectorAll('.circle, .rectangle, .battery1, .battery2, .rectangle2, .trapezoid, .fur1, .fur2').forEach(part => part.classList.remove('selected-item'));
+            selectedItem.querySelectorAll('.circle, .rectangle, .battery1, .battery2, .rectangle2, .trapezoid, .fur1, .fur2')
+            .forEach(part => part.classList.remove('selected-item'));
+            const rotateHandle = selectedItem.querySelector('.rotate-circle');
+            if (rotateHandle) {
+                rotateHandle.remove();
+            }
             //document.querySelectorAll('.color, .speed').style.display = 'none';
-        } else if (e.target == selectedItem) {
+        /*} else if (e.target == selectedItem) {
             //selectedItem.classList.add();
             //document.querySelectorAll('.color, .speed').style.display = 'block'; //alter this querySelectorAll '.customization test, etcetc
+        }*/
+        }
+        if (e.target.closest('.dropped-item')) {
+            const item = e.target.closest('.dropped-item');
+            selectItem(item);
         }
     });
 });
