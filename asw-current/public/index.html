@@ -116,8 +116,14 @@
     </div>
     <div class="customization">
       <div class="undoredodel">
-        <button id="undo" onclick="undo()">Undo</button>
-        <button id="redo" onclick="redo()">Redo</button>
+        <div class="undoredo">
+          <button id="undo" onclick="undo()">
+            <img src="undo.png" id="undo-arrow" draggable="false" style="display: block;"/>
+          </button>
+          <button id="redo" onclick="redo()">
+            <img src="redo.png" id="redo-arrow" draggable="false" style="display: block;"/>
+          </button>
+        </div>
         <button id="duplicate" onclick="duplicate()">Duplicate</button>
         <button id="delete" onclick="deleteItem()">Delete</button>
       </div>
