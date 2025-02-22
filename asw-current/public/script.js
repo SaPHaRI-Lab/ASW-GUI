@@ -387,20 +387,18 @@ document.addEventListener('DOMContentLoaded', function() {
         let clickedItem = null;
         item.addEventListener('click', function(e) {
             if (e.target.id == 'click-fur') {
-                const furNodeList = document.querySelectorAll('.fur-patch');
-                for (let i = 0; i < furNodeList.length; i++) {
-                    const furClonedNode = furNodeList[i].cloneNode(true);
-                    furClonedNode.id = `${'fur-patch'}-${Date.now()}`;
-                    furClonedNode.className = furClonedNode.className + ' dropped-item';
-                    dropArea.appendChild(furClonedNode);
-                    clickPositionItem(furClonedNode, lastClickX, lastClickY, dropArea);
-                    setTimeout(() => selectItem(furClonedNode), 50);
+                const ogFur = document.querySelector('.option #fur-patch');
+                const furClonedNode = ogFur.cloneNode(true);
+                furClonedNode.id = `fur-patch-${Date.now()}`;
+                furClonedNode.classList.add('dropped-item');
+                dropArea.appendChild(furClonedNode);
+                clickPositionItem(furClonedNode, lastClickX, lastClickY, dropArea);
+                setTimeout(() => selectItem(furClonedNode), 50);
+                selectItem(furClonedNode);
+                furClonedNode.addEventListener('click', function () {
                     selectItem(furClonedNode);
-                    furClonedNode.addEventListener('click', function () {
-                        selectItem(furClonedNode);
-                    });
-                    (currView == "front" ? frontItems : backItems).push(furClonedNode);
-                }
+                });
+                (currView == "front" ? frontItems : backItems).push(furClonedNode);
                 clickItem.style.display = 'none';
                 clickOpen = false;
             } else if (e.target.id == 'click-light1') {
@@ -418,37 +416,33 @@ document.addEventListener('DOMContentLoaded', function() {
                 clickItem.style.display = 'none';
                 clickOpen = false;
             } else if (e.target.id == 'click-light2') {
-                const lightNodeList = document.querySelectorAll('.light-strip');
-                for (let i = 0; i < lightNodeList.length; i++) {
-                    const lightClonedNode = lightNodeList[i].cloneNode(true);
-                    lightClonedNode.id = `${'light-strip'}-${Date.now()}`;
-                    lightClonedNode.className = lightClonedNode.className + ' dropped-item';
-                    dropArea.appendChild(lightClonedNode);
-                    clickPositionItem(lightClonedNode, lastClickX, lastClickY, dropArea);
-                    setTimeout(() => selectItem(lightClonedNode), 50);
+                const ogLights = document.querySelector('.option #light-strip');
+                const lightClonedNode = ogLights.cloneNode(true);
+                lightClonedNode.id = `light-strip-${Date.now()}`;
+                lightClonedNode.classList.add('dropped-item');
+                dropArea.appendChild(lightClonedNode);
+                clickPositionItem(lightClonedNode, lastClickX, lastClickY, dropArea);
+                setTimeout(() => selectItem(lightClonedNode), 50);
+                selectItem(lightClonedNode);
+                lightClonedNode.addEventListener('click', function () {
                     selectItem(lightClonedNode);
-                    lightClonedNode.addEventListener('click', function () {
-                        selectItem(lightClonedNode);
-                    });
-                    (currView == "front" ? frontItems : backItems).push(lightClonedNode);
-                }
+                });
+                (currView == "front" ? frontItems : backItems).push(lightClonedNode);
                 clickItem.style.display = 'none';
                 clickOpen = false;
             } else if (e.target.id == 'click-battery') {
-                const batteryNodeList = document.querySelectorAll('.battery');
-                for (let i = 0; i < batteryNodeList.length; i++) {
-                    const batteryClonedNode = batteryNodeList[i].cloneNode(true);
-                    batteryClonedNode.id = `${'battery'}-${Date.now()}`;
-                    batteryClonedNode.className = batteryClonedNode.className + ' dropped-item';
-                    dropArea.appendChild(batteryClonedNode);
-                    clickPositionItem(batteryClonedNode, lastClickX, lastClickY, dropArea);
-                    setTimeout(() => selectItem(batteryClonedNode), 50);
+                const ogBattery = document.querySelector('.option #battery');
+                const batteryClonedNode = ogBattery.cloneNode(true);
+                batteryClonedNode.id = `battery-${Date.now()}`;
+                batteryClonedNode.classList.add('dropped-item');
+                dropArea.appendChild(batteryClonedNode);
+                clickPositionItem(batteryClonedNode, lastClickX, lastClickY, dropArea);
+                setTimeout(() => selectItem(batteryClonedNode), 50);
+                selectItem(batteryClonedNode);
+                batteryClonedNode.addEventListener('click', function () {
                     selectItem(batteryClonedNode);
-                    batteryClonedNode.addEventListener('click', function () {
-                        selectItem(batteryClonedNode);
-                    });
-                    (currView == "front" ? frontItems : backItems).push(batteryClonedNode);
-                }
+                });
+                (currView == "front" ? frontItems : backItems).push(batteryClonedNode);
                 clickItem.style.display = 'none';
                 clickOpen = false;
             } else if (e.target.id == 'click-display') {
@@ -466,20 +460,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 clickItem.style.display = 'none';
                 clickOpen = false;
             } else if (e.target.id == 'click-speaker') {
-                const speakerNodeList = document.querySelectorAll('.speaker');
-                for (let i = 0; i < speakerNodeList.length; i++) {
-                    const speakerClonedNode = speakerNodeList[i].cloneNode(true);
-                    speakerClonedNode.id = `${'speaker'}-${Date.now()}`;
-                    speakerClonedNode.className = speakerClonedNode.className + ' dropped-item';
-                    dropArea.appendChild(speakerClonedNode);
-                    clickPositionItem(speakerClonedNode, lastClickX, lastClickY, dropArea);
-                    setTimeout(() => selectItem(speakerClonedNode), 50);
+                const ogSpeaker = document.querySelector('.option #speaker');
+                const speakerClonedNode = ogSpeaker.cloneNode(true);
+                speakerClonedNode.id = `speaker-${Date.now()}`;
+                speakerClonedNode.classList.add('dropped-item');
+                dropArea.appendChild(speakerClonedNode);
+                clickPositionItem(speakerClonedNode, lastClickX, lastClickY, dropArea);
+                setTimeout(() => selectItem(speakerClonedNode), 50);
+                selectItem(speakerClonedNode);
+                speakerClonedNode.addEventListener('click', function () {
                     selectItem(speakerClonedNode);
-                    speakerClonedNode.addEventListener('click', function () {
-                        selectItem(speakerClonedNode);
-                    });
-                    (currView == "front" ? frontItems : backItems).push(speakerClonedNode);
-                }
+                });
+                (currView == "front" ? frontItems : backItems).push(speakerClonedNode);
                 clickItem.style.display = 'none';
                 clickOpen = false;
             } else if (e.target.id == 'click-other') {
