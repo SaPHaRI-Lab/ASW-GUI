@@ -64,27 +64,17 @@ function drop(e) {
             clonedItem.id = uniqueId;
             clonedItem.className = item.className + ' dropped-item';
             clonedItem.style.cssText = item.style.cssText;
-            /*if (clonedItem.id.startsWith('light-ind')) {
-                clonedItem.style.backgroundColor = defaultColor;
-                clonedItem.setAttribute('data-flashing-color', defaultColor);
-            } else if (clonedItem.id.startsWith('light-strip')) {
-                clonedItem.querySelectorAll('.circle, .rectangle').forEach(part => {
-                    part.style.backgroundColor = defaultColor;
-                });
-                clonedItem.setAttribute('data-flashing-color', defaultColor);
-            }*/
             dropArea.appendChild(clonedItem);
             positionItem(clonedItem, e, dropArea);
-            /*if (clonedItem.id.startsWith('light-ind')) {
-                //document.querySelector('input[name="item-movement"][value="Flash ind"]').checked = true;
+            if (clonedItem.id.startsWith('light-ind')) {
+                document.querySelector('input[name="item-movement"][value="Flash ind"]').checked = true;
                 //selectedColor = 'grey';
                 flashAnimation(clonedItem);
             } else if (clonedItem.id.startsWith('light-strip')) {
-                //document.querySelector('input[name="item-movement"][value="Flash str"]').checked = true;
+                document.querySelector('input[name="item-movement"][value="Flash str"]').checked = true;
                 //selectedColor = 'grey';
                 flashAnimation(clonedItem);
-            }*/
-
+            }
             clonedItem.addEventListener('click', function() {
                 selectItem(clonedItem);
             });
@@ -144,8 +134,10 @@ function selectItem(item) {
         rotateCircle.style.transform = 'translateX(30%)';
     } else if (item.id.startsWith('battery')) {
         rotateCircle.style.transform = 'translateX(125%)';
+        item.style.transformOrigin = "30px 10px";
     } else if (item.id.startsWith('fur-patch')) {
         rotateCircle.style.transform = 'translateX(100%)';
+        item.style.transformOrigin = "20px 20px";
     }
     item.querySelectorAll('.rectangle, .circle, .battery1, .battery2, .rectangle2, .trapezoid, .fur1, .fur2').forEach(part => part.classList.add('selected-item'));
     document.querySelectorAll('.movement > div').forEach(div => {
