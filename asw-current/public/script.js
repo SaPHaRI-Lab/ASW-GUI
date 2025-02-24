@@ -7,15 +7,13 @@ function switchView() {
     const back = document.getElementById('jacket-back');
     const jacketCanvas = document.getElementById('jacketCanvas');
     const jacketCtx = jacketCanvas.getContext('2d');
-    if (currView == "front") {//front.style.display != 'none') {
+    if (currView == "front") {
         for (let i = 0; i < frontItems.length; i++) {
             frontItems[i].style.display = 'none';
         }
         for (let i = 0; i < backItems.length; i++) {
             backItems[i].style.display = 'block';
         }
-        //front.style.display = 'none';
-        //back.style.display = 'block';
         jacketCtx.clearRect(0,0,jacketCanvas.width,jacketCanvas.height);
         jacketCtx.drawImage(back,0,0,jacketCanvas.width,jacketCanvas.height);
         currView = "back";
@@ -28,8 +26,6 @@ function switchView() {
         for (let i = 0; i < backItems.length; i++) {
             backItems[i].style.display = 'none';
         }
-        //front.style.display = 'block';
-        //back.style.display = 'none';
         jacketCtx.clearRect(0,0,jacketCanvas.width,jacketCanvas.height);
         jacketCtx.drawImage(front,0,0,jacketCanvas.width,jacketCanvas.height);
         currView = "front";
@@ -128,32 +124,14 @@ function positionItem(item, e, area) {
 }
 
 function selectItem(item) {
-    /*document.querySelectorAll('.dropped-item').forEach(item => {
+    document.querySelectorAll('.dropped-item').forEach(item => {
         item.classList.remove('selected-item');
         item.querySelectorAll('.circle, .rectangle, .battery1, .battery2, .rectangle2, .trapezoid, .fur1, .fur2').forEach(part => part.classList.remove('selected-item'));
         if (item.querySelector('.rotate-circle')) {
             item.querySelector('.rotate-circle').remove();
         }
-    });*/
-    document.querySelectorAll('.dropped-item').forEach(el => {
-        el.classList.remove('selected-item');
-        el.querySelectorAll('.fur1, .fur2, .circle, .rectangle, .battery1, .battery2, .rectangle2, .trapezoid')
-          .forEach(part => part.classList.remove('selected-item'));
-        const existingRotateHandle = el.querySelector('.rotate-circle');
-        if (existingRotateHandle) {
-            existingRotateHandle.remove();
-        }
     });
     item.classList.add('selected-item');
-    item.querySelectorAll('.rectangle, .circle, .battery1, .battery2, .rectangle2, .trapezoid, .fur1, .fur2').forEach(part => part.classList.add('selected-item'));
-    /*const rotateCircle = document.createElement('div');
-    rotateCircle.classList.add('rotate-circle');
-    item.appendChild(rotateCircle);
-    rotateItem(item, rotateCircle);*/
-    let existingRotateHandle = item.querySelector('.rotate-circle');
-    if (existingRotateHandle) {
-        existingRotateHandle.remove();
-    }
     const rotateCircle = document.createElement('div');
     rotateCircle.classList.add('rotate-circle');
     item.appendChild(rotateCircle);
@@ -169,7 +147,7 @@ function selectItem(item) {
     } else if (item.id.startsWith('fur-patch')) {
         rotateCircle.style.transform = 'translateX(100%)';
     }
-    //item.querySelectorAll('.rectangle, .circle, .battery1, .battery2, .rectangle2, .trapezoid, .fur1, .fur2').forEach(part => part.classList.add('selected-item'));
+    item.querySelectorAll('.rectangle, .circle, .battery1, .battery2, .rectangle2, .trapezoid, .fur1, .fur2').forEach(part => part.classList.add('selected-item'));
     document.querySelectorAll('.movement > div').forEach(div => {
         div.style.display = 'none';
     });
@@ -409,20 +387,18 @@ document.addEventListener('DOMContentLoaded', function() {
         let clickedItem = null;
         item.addEventListener('click', function(e) {
             if (e.target.id == 'click-fur') {
-                const furNodeList = document.querySelectorAll('.fur-patch');
-                for (let i = 0; i < furNodeList.length; i++) {
-                    const furClonedNode = furNodeList[i].cloneNode(true);
-                    furClonedNode.id = `${'fur-patch'}-${Date.now()}`;
-                    furClonedNode.className = furClonedNode.className + ' dropped-item';
-                    dropArea.appendChild(furClonedNode);
-                    clickPositionItem(furClonedNode, lastClickX, lastClickY, dropArea);
-                    setTimeout(() => selectItem(furClonedNode), 50);
+                const ogFur = document.querySelector('.option #fur-patch');
+                const furClonedNode = ogFur.cloneNode(true);
+                furClonedNode.id = `fur-patch-${Date.now()}`;
+                furClonedNode.classList.add('dropped-item');
+                dropArea.appendChild(furClonedNode);
+                clickPositionItem(furClonedNode, lastClickX, lastClickY, dropArea);
+                setTimeout(() => selectItem(furClonedNode), 50);
+                selectItem(furClonedNode);
+                furClonedNode.addEventListener('click', function () {
                     selectItem(furClonedNode);
-                    furClonedNode.addEventListener('click', function () {
-                        selectItem(furClonedNode);
-                    });
-                    (currView == "front" ? frontItems : backItems).push(furClonedNode);
-                }
+                });
+                (currView == "front" ? frontItems : backItems).push(furClonedNode);
                 clickItem.style.display = 'none';
                 clickOpen = false;
             } else if (e.target.id == 'click-light1') {
@@ -440,37 +416,33 @@ document.addEventListener('DOMContentLoaded', function() {
                 clickItem.style.display = 'none';
                 clickOpen = false;
             } else if (e.target.id == 'click-light2') {
-                const lightNodeList = document.querySelectorAll('.light-strip');
-                for (let i = 0; i < lightNodeList.length; i++) {
-                    const lightClonedNode = lightNodeList[i].cloneNode(true);
-                    lightClonedNode.id = `${'light-strip'}-${Date.now()}`;
-                    lightClonedNode.className = lightClonedNode.className + ' dropped-item';
-                    dropArea.appendChild(lightClonedNode);
-                    clickPositionItem(lightClonedNode, lastClickX, lastClickY, dropArea);
-                    setTimeout(() => selectItem(lightClonedNode), 50);
+                const ogLights = document.querySelector('.option #light-strip');
+                const lightClonedNode = ogLights.cloneNode(true);
+                lightClonedNode.id = `light-strip-${Date.now()}`;
+                lightClonedNode.classList.add('dropped-item');
+                dropArea.appendChild(lightClonedNode);
+                clickPositionItem(lightClonedNode, lastClickX, lastClickY, dropArea);
+                setTimeout(() => selectItem(lightClonedNode), 50);
+                selectItem(lightClonedNode);
+                lightClonedNode.addEventListener('click', function () {
                     selectItem(lightClonedNode);
-                    lightClonedNode.addEventListener('click', function () {
-                        selectItem(lightClonedNode);
-                    });
-                    (currView == "front" ? frontItems : backItems).push(lightClonedNode);
-                }
+                });
+                (currView == "front" ? frontItems : backItems).push(lightClonedNode);
                 clickItem.style.display = 'none';
                 clickOpen = false;
             } else if (e.target.id == 'click-battery') {
-                const batteryNodeList = document.querySelectorAll('.battery');
-                for (let i = 0; i < batteryNodeList.length; i++) {
-                    const batteryClonedNode = batteryNodeList[i].cloneNode(true);
-                    batteryClonedNode.id = `${'battery'}-${Date.now()}`;
-                    batteryClonedNode.className = batteryClonedNode.className + ' dropped-item';
-                    dropArea.appendChild(batteryClonedNode);
-                    clickPositionItem(batteryClonedNode, lastClickX, lastClickY, dropArea);
-                    setTimeout(() => selectItem(batteryClonedNode), 50);
+                const ogBattery = document.querySelector('.option #battery');
+                const batteryClonedNode = ogBattery.cloneNode(true);
+                batteryClonedNode.id = `battery-${Date.now()}`;
+                batteryClonedNode.classList.add('dropped-item');
+                dropArea.appendChild(batteryClonedNode);
+                clickPositionItem(batteryClonedNode, lastClickX, lastClickY, dropArea);
+                setTimeout(() => selectItem(batteryClonedNode), 50);
+                selectItem(batteryClonedNode);
+                batteryClonedNode.addEventListener('click', function () {
                     selectItem(batteryClonedNode);
-                    batteryClonedNode.addEventListener('click', function () {
-                        selectItem(batteryClonedNode);
-                    });
-                    (currView == "front" ? frontItems : backItems).push(batteryClonedNode);
-                }
+                });
+                (currView == "front" ? frontItems : backItems).push(batteryClonedNode);
                 clickItem.style.display = 'none';
                 clickOpen = false;
             } else if (e.target.id == 'click-display') {
@@ -488,20 +460,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 clickItem.style.display = 'none';
                 clickOpen = false;
             } else if (e.target.id == 'click-speaker') {
-                const speakerNodeList = document.querySelectorAll('.speaker');
-                for (let i = 0; i < speakerNodeList.length; i++) {
-                    const speakerClonedNode = speakerNodeList[i].cloneNode(true);
-                    speakerClonedNode.id = `${'speaker'}-${Date.now()}`;
-                    speakerClonedNode.className = speakerClonedNode.className + ' dropped-item';
-                    dropArea.appendChild(speakerClonedNode);
-                    clickPositionItem(speakerClonedNode, lastClickX, lastClickY, dropArea);
-                    setTimeout(() => selectItem(speakerClonedNode), 50);
+                const ogSpeaker = document.querySelector('.option #speaker');
+                const speakerClonedNode = ogSpeaker.cloneNode(true);
+                speakerClonedNode.id = `speaker-${Date.now()}`;
+                speakerClonedNode.classList.add('dropped-item');
+                dropArea.appendChild(speakerClonedNode);
+                clickPositionItem(speakerClonedNode, lastClickX, lastClickY, dropArea);
+                setTimeout(() => selectItem(speakerClonedNode), 50);
+                selectItem(speakerClonedNode);
+                speakerClonedNode.addEventListener('click', function () {
                     selectItem(speakerClonedNode);
-                    speakerClonedNode.addEventListener('click', function () {
-                        selectItem(speakerClonedNode);
-                    });
-                    (currView == "front" ? frontItems : backItems).push(speakerClonedNode);
-                }
+                });
+                (currView == "front" ? frontItems : backItems).push(speakerClonedNode);
                 clickItem.style.display = 'none';
                 clickOpen = false;
             } else if (e.target.id == 'click-other') {
@@ -673,11 +643,21 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectedItem = document.querySelector('.dropped-item.selected-item');
         if (selectedItem && e.target != selectedItem && !e.target.closest('.customization') && !e.target.closest('.rotate-circle')) {
             selectedItem.classList.remove('selected-item');
-            selectedItem.querySelectorAll('.circle, .rectangle, .battery1, .battery2, .rectangle2, .trapezoid, .fur1, .fur2').forEach(part => part.classList.remove('selected-item'));
+            selectedItem.querySelectorAll('.circle, .rectangle, .battery1, .battery2, .rectangle2, .trapezoid, .fur1, .fur2')
+            .forEach(part => part.classList.remove('selected-item'));
+            const rotateHandle = selectedItem.querySelector('.rotate-circle');
+            if (rotateHandle) {
+                rotateHandle.remove();
+            }
             //document.querySelectorAll('.color, .speed').style.display = 'none';
-        } else if (e.target == selectedItem) {
+        /*} else if (e.target == selectedItem) {
             //selectedItem.classList.add();
             //document.querySelectorAll('.color, .speed').style.display = 'block'; //alter this querySelectorAll '.customization test, etcetc
+        }*/
+        }
+        if (e.target.closest('.dropped-item')) {
+            const item = e.target.closest('.dropped-item');
+            selectItem(item);
         }
     });
 });

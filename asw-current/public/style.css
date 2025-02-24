@@ -349,7 +349,7 @@ body {
   font-weight: lighter;
   color: white;
   font-size: 17px;
-  margin-top: 40px;
+  margin-top: 45px;
   margin-left: 48px;
   margin-bottom: 3px;
   padding: 20px;
@@ -399,6 +399,82 @@ body {
   width: 40%;
   margin-top: 35px;
   margin-left: 20px;
+}
+#save-button:hover {
+  background-color: #4190ff !important; 
+  border-color: #4190ff !important;
+}
+
+.undoredodel {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  /*grid-gap: 10px;*/
+  grid-template-rows: auto auto;
+  gap: 10px 7px;
+  width: max-content;
+  justify-content: center;
+  margin-left: 10px; 
+}
+#undo, #redo {
+  width: 60px;
+  height: 30px;
+  cursor: pointer;
+  background-color: #9be4fc;
+  border-radius: 3px;
+  border: #9be4fc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px; 
+}
+#undo-arrow, #redo-arrow {
+  width: 35px;
+  height: 30px;
+}
+#undo {
+  grid-column: 1;
+  grid-row: 1;
+}
+#redo {
+  grid-column: 2;
+  grid-row: 1;
+}
+.undoredo {
+  grid-column: span 2;
+  display: flex;
+  justify-content: center;
+  gap: 7px;
+}
+#duplicate {
+  cursor: pointer;
+  background-color: #9be4fc;
+  border-radius: 3px;
+  border-color: #9be4fc;
+  padding: 8px;
+  font-size: 14px;
+  color: black;
+  grid-column: 1;
+  grid-row: 2;
+}
+#delete {
+  cursor: pointer;
+  background-color: #ff8383;
+  border-radius: 3px;
+  border-color: #ff8383;
+  padding: 8px;
+  font-size: 14px;
+  color: black;
+  grid-column: 2;
+  grid-row: 2;
+}
+#delete:hover {
+  background-color: #ffa8a8 !important;
+  border-color: #ffa8a8 !important;
+}
+
+#back-view:hover, #front-view:hover, #undo:hover, #redo:hover, #duplicate:hover {
+  background-color: #b6edff !important;
+  border-color: #b6edff !important;
 }
 
 #movement-title {
