@@ -66,15 +66,15 @@ function drop(e) {
             clonedItem.style.cssText = item.style.cssText;
             dropArea.appendChild(clonedItem);
             positionItem(clonedItem, e, dropArea);
+            selectItem(clonedItem);
             if (clonedItem.id.startsWith('light-ind')) {
                 document.querySelector('input[name="item-movement"][value="Flash ind"]').checked = true;
-                //selectedColor = 'grey';
-                flashAnimation(clonedItem);
+                document.querySelector('input[name="item-movement"][value="Flash ind"]').dispatchEvent(new Event('change'));
             } else if (clonedItem.id.startsWith('light-strip')) {
                 document.querySelector('input[name="item-movement"][value="Flash str"]').checked = true;
-                //selectedColor = 'grey';
-                flashAnimation(clonedItem);
+                document.querySelector('input[name="item-movement"][value="Flash str"]').dispatchEvent(new Event('change'));
             }
+            flashAnimation(clonedItem);
             clonedItem.addEventListener('click', function() {
                 selectItem(clonedItem);
             });
@@ -407,6 +407,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 (currView == "front" ? frontItems : backItems).push(clickedItem);
                 clickItem.style.display = 'none';
                 clickOpen = false;
+                selectItem(clickedItem);
+                document.querySelector('input[name="item-movement"][value="Flash ind"]').checked = true;
+                document.querySelector('input[name="item-movement"][value="Flash ind"]').dispatchEvent(new Event('change'));
+                flashAnimation(clickedItem);
+                clonedItem.addEventListener('click', function() {
+                    selectItem(clickedItem);
+                });
             } else if (e.target.id == 'click-light2') {
                 const ogLights = document.querySelector('.option #light-strip');
                 const lightClonedNode = ogLights.cloneNode(true);
@@ -422,6 +429,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 (currView == "front" ? frontItems : backItems).push(lightClonedNode);
                 clickItem.style.display = 'none';
                 clickOpen = false;
+                selectItem(lightClonedNode);
+                document.querySelector('input[name="item-movement"][value="Flash str"]').checked = true;
+                document.querySelector('input[name="item-movement"][value="Flash str"]').dispatchEvent(new Event('change'));
+                flashAnimation(lightClonedNode);
+                lightClonedNode.addEventListener('click', function() {
+                    selectItem(lightClonedNode);
+                });
             } else if (e.target.id == 'click-battery') {
                 const ogBattery = document.querySelector('.option #battery');
                 const batteryClonedNode = ogBattery.cloneNode(true);
@@ -715,6 +729,9 @@ function normalizeColorStr(colorStr) {
 }
 
 function flashAnimation(item, flashPattern) {
+    if (item.flashInterval) {
+        clearInterval(item.flashInterval);
+    }
     flashingItems.add(item);
     let lights = Array.from(item.querySelectorAll('.circle'));
     if (!selectedColor) {
@@ -723,14 +740,14 @@ function flashAnimation(item, flashPattern) {
         item.setAttribute('data-flashing-color', selectedColor);
     }
     if (flashPattern == 'trickle-up' || flashPattern == 'trickle-down') {
-        if (flashInterval) {
+        /*if (flashInterval) {
             clearInterval(flashInterval);
-        }
+        }*/
         if (flashPattern == 'trickle-up') {
             lights.reverse();
         }
         let currLight = 0; //current light that's flashing
-        flashInterval = setInterval(() => {
+        item.flashInterval = setInterval(() => {
             for (let i = 0; i < lights.length; i++) {
                 if (i == currLight) {
                     lights[i].style.backgroundColor = selectedColor;
@@ -741,10 +758,10 @@ function flashAnimation(item, flashPattern) {
             currLight = (currLight+1) % lights.length;
         }, currSpeed);
     } else if (flashPattern == 'random-fl') {
-        if (flashInterval) {
+        /*if (flashInterval) {
             clearInterval(flashInterval);
-        }
-        flashInterval = setInterval(() => {
+        }*/
+        item.flashInterval = setInterval(() => {
             for (let i = 0; i < lights.length; i++) {
                 const randomFlash = Math.random();
                 if (randomFlash > 0.5) {
@@ -755,10 +772,10 @@ function flashAnimation(item, flashPattern) {
             }
         }, currSpeed);
     } else { //default flash
-        if (flashInterval) {
+        /*if (flashInterval) {
             clearInterval(flashInterval);
-        }
-        flashInterval = setInterval(() => {
+        }*/
+        item.flashInterval = setInterval(() => {
             flashingItems.forEach(flashingItem => {
                 let flashingColor = normalizeColorStr(flashingItem.getAttribute('data-flashing-color'));
                 let currColor = null;
@@ -786,7 +803,6 @@ function flashAnimation(item, flashPattern) {
         }, currSpeed);
     }
 }
-
 //light on & no flash option
 function stopFlash(item) {
     flashingItems.delete(item);
