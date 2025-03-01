@@ -50,6 +50,10 @@ app.get("/files", (req, res) => {
   });
 });
 
+app.get("/ASWGUIdash", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "dashboard.html"));
+});
+
 app.post("/upload-csv", upload.single("csv_file"), (req, res) => {
   const {participant_num, video_num} = req.body;
   const fileName = req.file.originalname;
@@ -58,12 +62,18 @@ app.post("/upload-csv", upload.single("csv_file"), (req, res) => {
 });
 
 app.get("/download/:id", (req, res) => {
-  const fileId = req.params.id;
-    db.get("SELECT file_name, file_data FROM participant_designs WHERE id = ?", [fileId], (err, row) => {
-      if (err || !row) {
-        return res.status(404).json({ error: "File not found" });
-      }
-      res.setHeader("Content-Disposition", `attachment; filename="${row.file_name}"`);
-      res.send(row.file_data);
-    });
+  const fileID = req.params.id;
+  db.get("SELECT file_name, file_data FROM participant_designs WHERE id = ?", [fileID], (err, row) => {
+    if (err || !row) {
+      return res.status(404).json({ error: "File not found" });
+    }
+    res.setHeader("Content-Disposition", `attachment; filename="${row.file_name}"`);
+    res.setHeader("Content-Type", "text/csv");
+    res.send(row.file_data);
+  });
+});
+
+app.delete("/delete/:id", (req, res) => {
+  const fileID = req.params.id;
+  db.run("DELETE FROM participant_designs WHERE id = ?", [fileID]);
 });

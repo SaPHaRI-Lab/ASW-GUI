@@ -911,8 +911,8 @@ function continueToGUI() {
     document.getElementById("videoNum").value = document.getElementById("videoNum1").value;
 }
 
-//test --> also going to change this
-function saveFile() {
+//saves participant design data to a CSV
+/*function saveFile() {
     const participantNum = document.getElementById('participant').value;
     const videoNum = document.getElementById('videoNum').value;
     var csvFile = "data:text/csv;charset=utf-8,";
@@ -930,4 +930,26 @@ function saveFile() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+}*/
+async function saveFile() {
+    const participantNum = document.getElementById('participant').value;
+    const videoNum = document.getElementById('videoNum').value;
+    var csvFile = "Jacket Side,Item ID,Customization,Speed,User Input,Color,X Position,Y Position\n";//"data:text/csv;charset=utf-8,";
+    //csvFile += "Jacket Side,Item ID,Customization,Speed,User Input,Color,X Position,Y Position\n";
+    for (let i = 0; i < frontItems.length; i++) { //items on jacket front  selectedItem.userinput = document.getElementById(selectedItem.custom-1).value;
+        csvFile += `front,${frontItems[i].id},${frontItems[i].radioSelection},${frontItems[i].speed},${frontItems[i].userinput},"${frontItems[i].color}",${frontItems[i].x},${frontItems[i].y}\n`;
+    }
+    for (let i = 0; i < backItems.length; i++) { //items on jacket back
+        csvFile += `back,${backItems[i].id},${backItems[i].radioSelection},${backItems[i].speed},${backItems[i].userinput},"${backItems[i].color}",${backItems[i].x},${backItems[i].y}\n`;
+    }
+    const formData = new FormData();
+    formData.append("participant_num", participantNum);
+    formData.append("video_num", videoNum);
+    formData.append("csv_file", new Blob([csvFile], { type: "text/csv" }), `Participant_${participantNum}_Video_${videoNum}.csv`);
+    const response = await fetch("http://localhost:3000/upload-csv", {
+        method: "POST",
+        body: formData
+    });
+    const result = await response.json();
+    alert(result.message);
 }
