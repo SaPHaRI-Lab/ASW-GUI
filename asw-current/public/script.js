@@ -644,6 +644,10 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('close-info').addEventListener('click', function() {
         document.querySelector('.popup-info').style.display = 'none';
     });
+    //submitted popup
+    document.getElementById('save-button').addEventListener('click', function() {
+        submitPopup();
+    });
     //clicking to deselect
     document.querySelector('.container').addEventListener('click', function(e) {
         const selectedItem = document.querySelector('.dropped-item.selected-item');
@@ -934,9 +938,8 @@ function continueToGUI() {
 async function saveFile() {
     const participantNum = document.getElementById('participant').value;
     const videoNum = document.getElementById('videoNum').value;
-    var csvFile = "Jacket Side,Item ID,Customization,Speed,User Input,Color,X Position,Y Position\n";//"data:text/csv;charset=utf-8,";
-    //csvFile += "Jacket Side,Item ID,Customization,Speed,User Input,Color,X Position,Y Position\n";
-    for (let i = 0; i < frontItems.length; i++) { //items on jacket front  selectedItem.userinput = document.getElementById(selectedItem.custom-1).value;
+    var csvFile = "Jacket Side,Item ID,Customization,Speed,User Input,Color,X Position,Y Position\n";
+    for (let i = 0; i < frontItems.length; i++) { //items on jacket front
         csvFile += `front,${frontItems[i].id},${frontItems[i].radioSelection},${frontItems[i].speed},${frontItems[i].userinput},"${frontItems[i].color}",${frontItems[i].x},${frontItems[i].y}\n`;
     }
     for (let i = 0; i < backItems.length; i++) { //items on jacket back
@@ -952,4 +955,9 @@ async function saveFile() {
     });
     const result = await response.json();
     alert(result.message);
+}
+function submitPopup() {
+    document.querySelector('.popup-submit').style.display = 'block';
+    document.querySelector('.popup').style.display = 'block';
+    document.querySelector('.popup-instructions').style.display = 'none';
 }

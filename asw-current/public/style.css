@@ -139,11 +139,6 @@ body {
   color: white;
 }
 
-.option-pic {
-  width: 80%;
-  cursor: grab;
-}
-
 .sidebar {
   width: 150px;
   overflow-y: scroll;
@@ -185,7 +180,7 @@ body {
   margin-left: 57%;
   background: white;
   border-color: gray;
-  height: 210px;
+  height: 250px;
   width: 350px;
   z-index: 1000;
   border-radius: 10px;
@@ -377,7 +372,6 @@ body {
   outline: none;
   opacity: 1;
 }
-
 .slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
@@ -403,6 +397,23 @@ body {
 #save-button:hover {
   background-color: #4190ff !important; 
   border-color: #4190ff !important;
+}
+.popup-submit {
+  background: #e7e7e7;
+  text-align: center;
+  border-radius: 10px;
+  width: 30%;
+  position: absolute; 
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+#submit-text {
+  color: black;
+  font-size: 17px;
+  padding-left: 7%;
+  padding-right: 7%;
+  padding-bottom: 4%;
 }
 
 .undoredodel {
