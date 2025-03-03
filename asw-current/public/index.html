@@ -6,7 +6,7 @@
   <div class="popup">
     <div class="popup-instructions">
       <h1 id="popup-title">Instructions</h1>
-      <p id="popup-text"><br>Welcome to the Affect-Sensing Wearable graphical user interface (GUI)!</br><br>Please drag & drop features from the left sidebar onto the jacket image based on the video you have watched. You can consider emotional expression and desired social-physical interaction. From the right sidebar, you can make customizations and selections for various actuation methods.</br><br>Before beginning, please enter your participant number and video code below:</br></p>
+      <p id="popup-text"><br>Welcome to the Affect-Sensing Wearable graphical user interface (GUI).</br><br>Please drag & drop features from the left sidebar onto the jacket image based on the video you have watched. You can consider emotional expression and desired social-physical interaction. From the right sidebar, you can make customizations and selections for various actuation methods. When you're done with your design, click the "Submit Design" button at the bottom right.</br><br>Before beginning, please enter your participant number and video code below:</br></p>
       <div class="popup-identifiers">
         <label for="participant1" id="pNum1">Participant #:</label>
         <input type="text" id="participant1"/>
@@ -14,6 +14,9 @@
         <input type="text" id="videoNum1"/>
       </div>
       <button id="continue-button" disabled onclick="continueToGUI()">Continue</button>
+    </div>
+    <div class="popup-submit" style="display: none;">
+      <p id="submit-text"><br>You have now completed the design. Please refresh the page to continue to the next design.</br><br>If you accidentally submitted before you are done, please notify the researcher.</br></p>
     </div>
   </div>
   <div class="container">
@@ -38,10 +41,9 @@
     <div class="popup-info">
       <button id="close-info">x</button>
       <h1 id="info-title">Instructions</h1>
-      <p id="info-text">Drag & drop features from the left sidebar onto the jacket image based on the video you have watched. You can consider emotional expression and desired social-physical interaction. From the right sidebar, you can make customizations and selections for various actuation methods.</p>
+      <p id="info-text">Drag & drop features from the left sidebar onto the jacket image based on the video you have watched. You can consider emotional expression and desired social-physical interaction. From the right sidebar, you can make customizations and selections for various actuation methods. When you're done with your design, click the "Submit Design" button at the bottom right.</p>
     </div>
     <div class="sidebar">
-      <!--<button id="info-button">?</button>-->
       <div class="identifiers">
         <label for="participant" id="pNum">Participant #:</label>
         <input type="text" id="participant"/>
@@ -184,7 +186,7 @@
         <textarea id="custom-input" name="item-movement" rows="2" cols="22"></textarea>
     </div>
       <div class="save">
-        <button type="button" id="save-button" onclick="saveFile()">Submit</button>
+        <button type="button" id="save-button" onclick="saveFile()">Submit Design</button>
       </div>
     </div>
   </div>

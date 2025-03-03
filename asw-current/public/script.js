@@ -64,27 +64,17 @@ function drop(e) {
             clonedItem.id = uniqueId;
             clonedItem.className = item.className + ' dropped-item';
             clonedItem.style.cssText = item.style.cssText;
-            /*if (clonedItem.id.startsWith('light-ind')) {
-                clonedItem.style.backgroundColor = defaultColor;
-                clonedItem.setAttribute('data-flashing-color', defaultColor);
-            } else if (clonedItem.id.startsWith('light-strip')) {
-                clonedItem.querySelectorAll('.circle, .rectangle').forEach(part => {
-                    part.style.backgroundColor = defaultColor;
-                });
-                clonedItem.setAttribute('data-flashing-color', defaultColor);
-            }*/
             dropArea.appendChild(clonedItem);
             positionItem(clonedItem, e, dropArea);
-            /*if (clonedItem.id.startsWith('light-ind')) {
-                //document.querySelector('input[name="item-movement"][value="Flash ind"]').checked = true;
-                //selectedColor = 'grey';
-                flashAnimation(clonedItem);
+            selectItem(clonedItem);
+            if (clonedItem.id.startsWith('light-ind')) {
+                document.querySelector('input[name="item-movement"][value="Flash ind"]').checked = true;
+                document.querySelector('input[name="item-movement"][value="Flash ind"]').dispatchEvent(new Event('change'));
             } else if (clonedItem.id.startsWith('light-strip')) {
-                //document.querySelector('input[name="item-movement"][value="Flash str"]').checked = true;
-                //selectedColor = 'grey';
-                flashAnimation(clonedItem);
-            }*/
-
+                document.querySelector('input[name="item-movement"][value="Flash str"]').checked = true;
+                document.querySelector('input[name="item-movement"][value="Flash str"]').dispatchEvent(new Event('change'));
+            }
+            flashAnimation(clonedItem);
             clonedItem.addEventListener('click', function() {
                 selectItem(clonedItem);
             });
@@ -144,8 +134,10 @@ function selectItem(item) {
         rotateCircle.style.transform = 'translateX(30%)';
     } else if (item.id.startsWith('battery')) {
         rotateCircle.style.transform = 'translateX(125%)';
+        item.style.transformOrigin = "30px 10px";
     } else if (item.id.startsWith('fur-patch')) {
         rotateCircle.style.transform = 'translateX(100%)';
+        item.style.transformOrigin = "20px 20px";
     }
     item.querySelectorAll('.rectangle, .circle, .battery1, .battery2, .rectangle2, .trapezoid, .fur1, .fur2').forEach(part => part.classList.add('selected-item'));
     document.querySelectorAll('.movement > div').forEach(div => {
@@ -415,6 +407,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 (currView == "front" ? frontItems : backItems).push(clickedItem);
                 clickItem.style.display = 'none';
                 clickOpen = false;
+                selectItem(clickedItem);
+                document.querySelector('input[name="item-movement"][value="Flash ind"]').checked = true;
+                document.querySelector('input[name="item-movement"][value="Flash ind"]').dispatchEvent(new Event('change'));
+                flashAnimation(clickedItem);
+                clonedItem.addEventListener('click', function() {
+                    selectItem(clickedItem);
+                });
             } else if (e.target.id == 'click-light2') {
                 const ogLights = document.querySelector('.option #light-strip');
                 const lightClonedNode = ogLights.cloneNode(true);
@@ -430,6 +429,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 (currView == "front" ? frontItems : backItems).push(lightClonedNode);
                 clickItem.style.display = 'none';
                 clickOpen = false;
+                selectItem(lightClonedNode);
+                document.querySelector('input[name="item-movement"][value="Flash str"]').checked = true;
+                document.querySelector('input[name="item-movement"][value="Flash str"]').dispatchEvent(new Event('change'));
+                flashAnimation(lightClonedNode);
+                lightClonedNode.addEventListener('click', function() {
+                    selectItem(lightClonedNode);
+                });
             } else if (e.target.id == 'click-battery') {
                 const ogBattery = document.querySelector('.option #battery');
                 const batteryClonedNode = ogBattery.cloneNode(true);
@@ -638,6 +644,10 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('close-info').addEventListener('click', function() {
         document.querySelector('.popup-info').style.display = 'none';
     });
+    //submitted popup
+    document.getElementById('save-button').addEventListener('click', function() {
+        submitPopup();
+    });
     //clicking to deselect
     document.querySelector('.container').addEventListener('click', function(e) {
         const selectedItem = document.querySelector('.dropped-item.selected-item');
@@ -723,6 +733,9 @@ function normalizeColorStr(colorStr) {
 }
 
 function flashAnimation(item, flashPattern) {
+    if (item.flashInterval) {
+        clearInterval(item.flashInterval);
+    }
     flashingItems.add(item);
     let lights = Array.from(item.querySelectorAll('.circle'));
     if (!selectedColor) {
@@ -731,14 +744,14 @@ function flashAnimation(item, flashPattern) {
         item.setAttribute('data-flashing-color', selectedColor);
     }
     if (flashPattern == 'trickle-up' || flashPattern == 'trickle-down') {
-        if (flashInterval) {
+        /*if (flashInterval) {
             clearInterval(flashInterval);
-        }
+        }*/
         if (flashPattern == 'trickle-up') {
             lights.reverse();
         }
         let currLight = 0; //current light that's flashing
-        flashInterval = setInterval(() => {
+        item.flashInterval = setInterval(() => {
             for (let i = 0; i < lights.length; i++) {
                 if (i == currLight) {
                     lights[i].style.backgroundColor = selectedColor;
@@ -749,10 +762,10 @@ function flashAnimation(item, flashPattern) {
             currLight = (currLight+1) % lights.length;
         }, currSpeed);
     } else if (flashPattern == 'random-fl') {
-        if (flashInterval) {
+        /*if (flashInterval) {
             clearInterval(flashInterval);
-        }
-        flashInterval = setInterval(() => {
+        }*/
+        item.flashInterval = setInterval(() => {
             for (let i = 0; i < lights.length; i++) {
                 const randomFlash = Math.random();
                 if (randomFlash > 0.5) {
@@ -763,10 +776,10 @@ function flashAnimation(item, flashPattern) {
             }
         }, currSpeed);
     } else { //default flash
-        if (flashInterval) {
+        /*if (flashInterval) {
             clearInterval(flashInterval);
-        }
-        flashInterval = setInterval(() => {
+        }*/
+        item.flashInterval = setInterval(() => {
             flashingItems.forEach(flashingItem => {
                 let flashingColor = normalizeColorStr(flashingItem.getAttribute('data-flashing-color'));
                 let currColor = null;
@@ -794,7 +807,6 @@ function flashAnimation(item, flashPattern) {
         }, currSpeed);
     }
 }
-
 //light on & no flash option
 function stopFlash(item) {
     flashingItems.delete(item);
@@ -903,8 +915,8 @@ function continueToGUI() {
     document.getElementById("videoNum").value = document.getElementById("videoNum1").value;
 }
 
-//test --> also going to change this
-function saveFile() {
+//saves participant design data to a CSV
+/*function saveFile() {
     const participantNum = document.getElementById('participant').value;
     const videoNum = document.getElementById('videoNum').value;
     var csvFile = "data:text/csv;charset=utf-8,";
@@ -922,4 +934,30 @@ function saveFile() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+}*/
+async function saveFile() {
+    const participantNum = document.getElementById('participant').value;
+    const videoNum = document.getElementById('videoNum').value;
+    var csvFile = "Jacket Side,Item ID,Customization,Speed,User Input,Color,X Position,Y Position\n";
+    for (let i = 0; i < frontItems.length; i++) { //items on jacket front
+        csvFile += `front,${frontItems[i].id},${frontItems[i].radioSelection},${frontItems[i].speed},${frontItems[i].userinput},"${frontItems[i].color}",${frontItems[i].x},${frontItems[i].y}\n`;
+    }
+    for (let i = 0; i < backItems.length; i++) { //items on jacket back
+        csvFile += `back,${backItems[i].id},${backItems[i].radioSelection},${backItems[i].speed},${backItems[i].userinput},"${backItems[i].color}",${backItems[i].x},${backItems[i].y}\n`;
+    }
+    const formData = new FormData();
+    formData.append("participant_num", participantNum);
+    formData.append("video_num", videoNum);
+    formData.append("csv_file", new Blob([csvFile], { type: "text/csv" }), `Participant_${participantNum}_Video_${videoNum}.csv`);
+    const response = await fetch("http://localhost:3000/upload-csv", {
+        method: "POST",
+        body: formData
+    });
+    const result = await response.json();
+    alert(result.message);
+}
+function submitPopup() {
+    document.querySelector('.popup-submit').style.display = 'block';
+    document.querySelector('.popup').style.display = 'block';
+    document.querySelector('.popup-instructions').style.display = 'none';
 }
