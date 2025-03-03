@@ -8,3 +8,9 @@ This is the graphical user interface (GUI) to be used in the ASW user study. The
 5. When you see this message "Server is running on http://localhost:3000" in your terminal, paste this link into your web browser to get to the GUI: http://localhost:3000
 
 *If these steps don't work to run the GUI, drag the "index.html" file onto your desktop and double click on it to open it in your browser
+
+## Instructions to see saved files
+1. Run "npm install express multer sqlite3 fs" in your terminal (first make sure that you are in the asw-current directory)
+2. Run the server by typing "node server.js" in your terminal.
+3. To see the files, go to http://localhost:3000/files
+4. To view the files in a dashboard format and delete or download files, go to http://localhost:3000/ASWGUIdash
