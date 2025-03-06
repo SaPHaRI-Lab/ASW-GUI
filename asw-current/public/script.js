@@ -162,6 +162,64 @@ function selectItem(item) {
     }
     loadItemSelections(item.id);
 }
+/*let selectedItems = new Set();
+function selectItem(item, e=null) {
+    if (e && e.shiftKey) {
+        if (selectedItems.has(item)) {
+            selectedItems.delete(item);
+            item.classList.remove('selected-item');
+        } else {
+            selectedItems.add(item);
+            item.classList.add('selected-item');
+        }
+    } else {
+        selectedItems.forEach(selected => selected.classList.remove('selected-item'));
+        selectedItems.clear();
+        selectedItems.add(item);
+        item.classList.add('selected-item');
+    }
+    selectedItems.forEach(selected => {
+        const rotateCircle = document.createElement('div');
+        rotateCircle.classList.add('rotate-circle');
+        selected.appendChild(rotateCircle);
+        rotateItem(selected, rotateCircle);
+        if (selected.id.startsWith('light-strip') || selected.id.startsWith('battery') || selected.id.startsWith('speaker') || selected.id.startsWith('fur-patch')) {
+            selected.style.border = 'none';
+        }
+        if (selected.id.startsWith('light-strip')) {
+            rotateCircle.style.top = '-27px';
+            rotateCircle.style.transform = 'translateX(30%)';
+        } else if (selected.id.startsWith('battery')) {
+            rotateCircle.style.transform = 'translateX(125%)';
+            selected.style.transformOrigin = "30px 10px";
+        } else if (selected.id.startsWith('fur-patch')) {
+            rotateCircle.style.transform = 'translateX(100%)';
+            selected.style.transformOrigin = "20px 20px";
+        }
+        selected.querySelectorAll('.rectangle, .circle, .battery1, .battery2, .rectangle2, .trapezoid, .fur1, .fur2').forEach(part => part.classList.add('selected-item'));
+        document.querySelectorAll('.movement > div').forEach(div => {
+            div.style.display = 'none';
+        });
+        if (selected.id.startsWith('speaker')) {
+            document.getElementById('movement-title').textContent = "Sound";
+            document.getElementById('custom-title').textContent = "Describe the desired sound:";
+        } else {
+            document.getElementById('movement-title').textContent = "Movement";
+            document.getElementById('custom-title').textContent = "Write my own:";
+        }
+    });
+    let baseId = item.id;
+    if (baseId.includes('copy')) {
+        baseId = item.id.split('-').slice(0, -2).join('-');
+    } else {
+        baseId = item.id.split('-').slice(0, -1).join('-');
+    }
+    const movementElement = document.getElementById(`${baseId}-movement`);
+    if (movementElement) {
+        movementElement.style.display = 'block';
+    }
+    loadItemSelections(item.id);
+}*/
 
 function rotateItem(item, rotateCircle) {
     let rotating = false;
