@@ -164,7 +164,18 @@ function selectItem(item) {
 }
 /*let selectedItems = new Set();
 function selectItem(item, e=null) {
+    const itemType = item.id.split('-')[0];
+    if (!e || !e.shiftKey) {
+        selectedItems.forEach(selected => selected.classList.remove('selected-item'));
+        selectedItems.clear();
+    }
     if (e && e.shiftKey) {
+        if (selectedItems.size > 0) {
+            const firstItemType = [...selectedItems][0].id.split('-')[0];
+            if (firstItemType !== itemType) {
+                return;
+            }
+        }
         if (selectedItems.has(item)) {
             selectedItems.delete(item);
             item.classList.remove('selected-item');
@@ -173,9 +184,16 @@ function selectItem(item, e=null) {
             item.classList.add('selected-item');
         }
     } else {
-        selectedItems.forEach(selected => selected.classList.remove('selected-item'));
-        selectedItems.clear();
-        selectedItems.add(item);
+        //selectedItems.forEach(selected => selected.classList.remove('selected-item'));
+        //selectedItems.clear();
+        /*document.querySelectorAll('.dropped-item').forEach(item => {
+            item.classList.remove('selected-item');
+            item.querySelectorAll('.circle, .rectangle, .battery1, .battery2, .rectangle2, .trapezoid, .fur1, .fur2').forEach(part => part.classList.remove('selected-item'));
+            if (item.querySelector('.rotate-circle')) {
+                item.querySelector('.rotate-circle').remove();
+            }
+        });*/
+        /*selectedItems.add(item);
         item.classList.add('selected-item');
     }
     selectedItems.forEach(selected => {
@@ -404,6 +422,13 @@ document.addEventListener('DOMContentLoaded', function() {
             selectedItem.color = selectedColor;
         }
     });
+    //shift click
+    /*document.addEventListener("click", function(e) {
+        const item = e.target.closest(".dropped-item"); 
+        if (item) {
+            selectItem(item, e);
+        }
+    });*/
     //create item when clicking jacket
     let clickOpen = false;
     const clickItem = document.querySelector('.click-create');
