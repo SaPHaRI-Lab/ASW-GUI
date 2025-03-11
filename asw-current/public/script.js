@@ -151,7 +151,7 @@ function selectItem(item) {
         document.getElementById('custom-title').textContent = "Write my own:";
     }
     let baseId = item.id;
-    if (baseId.includes('copy')) {
+    if (baseId.includes('CLONED')) {
         baseId = item.id.split('-').slice(0, -2).join('-');
     } else {
         baseId = item.id.split('-').slice(0, -1).join('-');
@@ -336,7 +336,7 @@ function resetUserInput() {
     }
 }
 
-let flashInterval = null;
+//let flashInterval = null;
 const flashingItems = new Set();
 let currSpeed = null;
 let selectedColor = null;
@@ -827,9 +827,7 @@ function flashAnimation(item, flashPattern) {
         item.setAttribute('data-flashing-color', selectedColor);
     }
     if (flashPattern == 'trickle-up' || flashPattern == 'trickle-down') {
-        /*if (flashInterval) {
-            clearInterval(flashInterval);
-        }*/
+
         if (flashPattern == 'trickle-up') {
             lights.reverse();
         }
@@ -845,9 +843,6 @@ function flashAnimation(item, flashPattern) {
             currLight = (currLight+1) % lights.length;
         }, currSpeed);
     } else if (flashPattern == 'random-fl') {
-        /*if (flashInterval) {
-            clearInterval(flashInterval);
-        }*/
         item.flashInterval = setInterval(() => {
             for (let i = 0; i < lights.length; i++) {
                 const randomFlash = Math.random();
@@ -859,10 +854,7 @@ function flashAnimation(item, flashPattern) {
             }
         }, currSpeed);
     } else { //default flash
-        /*if (flashInterval) {
-            clearInterval(flashInterval);
-        }*/
-        item.flashInterval = setInterval(() => {
+        /*item.flashInterval = setInterval(() => {
             flashingItems.forEach(flashingItem => {
                 let flashingColor = normalizeColorStr(flashingItem.getAttribute('data-flashing-color'));
                 let currColor = null;
@@ -887,16 +879,39 @@ function flashAnimation(item, flashPattern) {
                     });
                 }
             });
+        }, currSpeed);*/
+        let flashingColor = normalizeColorStr(item.getAttribute('data-flashing-color'));
+        let isOn = false;
+        item.flashInterval = setInterval(() => {
+            if (!flashingColor) {
+                flashingColor = defaultColor;
+            }
+            isOn = !isOn;
+            if (item.classList.contains('light-ind')) {
+                if (isOn) {
+                    item.style.backgroundColor = flashingColor;
+                } else {
+                    item.style.backgroundColor = '#bbb';
+                }
+            } else {
+                item.querySelectorAll('.rectangle, .circle').forEach(part => {
+                    if (isOn) {
+                        part.style.backgroundColor = flashingColor;
+                    } else {
+                        part.style.backgroundColor = '#bbb';
+                    }
+                });
+            }
         }, currSpeed);
     }
 }
 //light on & no flash option
 function stopFlash(item) {
-    flashingItems.delete(item);
-    if (flashingItems.size == 0 && flashInterval) {
-        clearInterval(flashInterval);
-        flashInterval = null;
+    if (item.flashInterval) { 
+        clearInterval(item.flashInterval);
+        item.flashInterval = null;
     }
+    flashingItems.delete(item);
     if (item.classList.contains('light-ind')) {
         if (item.getAttribute('data-flashing-color')) {
             item.style.backgroundColor = item.getAttribute('data-flashing-color');
