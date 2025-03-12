@@ -288,8 +288,8 @@ var itemSelections = {
     front: {},
     back: {}
 };
-function saveItemSelections(itemID, radioSelection, sliderValue, userInput) {
-    itemSelections[currView][itemID] = {radioSelection, sliderValue, userInput};
+function saveItemSelections(itemID, radioSelection, sliderValue, userInput, itemColor) {
+    itemSelections[currView][itemID] = {radioSelection, sliderValue, userInput, itemColor};
 }
 function loadItemSelections(itemID) {
     const selection = itemSelections[currView][itemID];
@@ -313,10 +313,26 @@ function loadItemSelections(itemID) {
                 userInputBox.value = '';
             }
         }
+        /*if (selection.itemColor) {
+            const colorCanvas = document.getElementById('colorCanvas');
+            const colorCtx = colorCanvas.getContext('2d');
+            const colorImg = document.getElementById('color-wheel');
+            colorCtx.clearRect(0,0,colorCanvas.width,colorCanvas.height);
+            colorCtx.drawImage(colorImg,0,0,colorCanvas.width,colorCanvas.height);
+            colorCtx.beginPath();
+            colorCtx.arc(colorX, colorY, 6, 0, 2 * Math.PI);
+            colorCtx.lineWidth = 2;
+            colorCtx.strokeStyle = 'black';
+            colorCtx.stroke();
+            const colorRange = document.getElementById('color-range');
+            colorRange.value = selection.colorRangeVal;
+            colorRange.style.background = `linear-gradient(to right, white, ${selection.itemColor}, black)`;
+        }*/
     } else {
         resetRadioButtons();
         resetSlider();
         resetUserInput();
+        resetColor();
     }
 }
 function resetRadioButtons() {
@@ -335,6 +351,16 @@ function resetUserInput() {
         userInputBox.value = '';
     }
 }
+function resetColor() {
+    const colorCanvas = document.getElementById('colorCanvas');
+    const colorCtx = colorCanvas.getContext('2d');
+    const colorImg = document.getElementById('color-wheel');
+    colorCtx.clearRect(0, 0, colorCanvas.width, colorCanvas.height);
+    colorCtx.drawImage(colorImg, 0, 0, colorCanvas.width, colorCanvas.height);
+    const colorRange = document.getElementById('color-range');
+    colorRange.value = 5;
+    colorRange.style.background = `linear-gradient(to right, white, ${selectedColor}, black)`;
+}
 
 //let flashInterval = null;
 const flashingItems = new Set();
@@ -342,6 +368,7 @@ let currSpeed = null;
 let selectedColor = null;
 const defaultColor = 'grey';
 let rgba2 = [];
+let colorX = null, colorY = null;
 
 document.addEventListener('DOMContentLoaded', function() {
     //draw jacket & color images to canvas
@@ -369,8 +396,8 @@ document.addEventListener('DOMContentLoaded', function() {
         var imgData = colorCtx.getImageData(e.offsetX, e.offsetY, 1, 1);
         var rgba = imgData.data;
         const rect = colorCanvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+        colorX = e.clientX - rect.left;
+        colorY = e.clientY - rect.top;
         if (rgba[3] !== 0) { //if click isnt on transparent area of image
             selectedColor = `rgba(${rgba[0]}, ${rgba[1]}, ${rgba[2]}, ${rgba[3] / 255})`;
             rgba2[0] = rgba[0];
@@ -397,7 +424,7 @@ document.addEventListener('DOMContentLoaded', function() {
             colorCtx.clearRect(0,0,colorCanvas.width,colorCanvas.height);
             colorCtx.drawImage(document.getElementById('color-wheel'),0,0,colorCanvas.width,colorCanvas.height);
             colorCtx.beginPath();
-            colorCtx.arc(x, y, 6, 0, 2 * Math.PI);
+            colorCtx.arc(colorX, colorY, 6, 0, 2 * Math.PI);
             colorCtx.lineWidth = 2;
             colorCtx.strokeStyle = 'black';
             colorCtx.stroke();
@@ -880,9 +907,9 @@ function flashAnimation(item, flashPattern) {
                 }
             });
         }, currSpeed);*/
-        let flashingColor = normalizeColorStr(item.getAttribute('data-flashing-color'));
         let isOn = false;
         item.flashInterval = setInterval(() => {
+            let flashingColor = normalizeColorStr(item.getAttribute('data-flashing-color'));
             if (!flashingColor) {
                 flashingColor = defaultColor;
             }
