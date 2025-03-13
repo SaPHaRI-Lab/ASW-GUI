@@ -68,9 +68,13 @@ function drop(e) {
             positionItem(clonedItem, e, dropArea);
             selectItem(clonedItem);
             if (clonedItem.id.startsWith('light-ind')) {
+                selectedColor = defaultColor;
+                colorX = null, colorY = null;
                 document.querySelector('input[name="item-movement"][value="Flash ind"]').checked = true;
                 document.querySelector('input[name="item-movement"][value="Flash ind"]').dispatchEvent(new Event('change'));
             } else if (clonedItem.id.startsWith('light-strip')) {
+                selectedColor = defaultColor;
+                colorX = null, colorY = null;
                 document.querySelector('input[name="item-movement"][value="Flash str"]').checked = true;
                 document.querySelector('input[name="item-movement"][value="Flash str"]').dispatchEvent(new Event('change'));
             }
@@ -288,8 +292,8 @@ var itemSelections = {
     front: {},
     back: {}
 };
-function saveItemSelections(itemID, radioSelection, sliderValue, userInput, itemColor) {
-    itemSelections[currView][itemID] = {radioSelection, sliderValue, userInput, itemColor};
+function saveItemSelections(itemID, radioSelection, sliderValue, userInput, itemColor, colorX, colorY, gradient) {
+    itemSelections[currView][itemID] = {radioSelection, sliderValue, userInput, itemColor, colorX, colorY, gradient};
 }
 function loadItemSelections(itemID) {
     const selection = itemSelections[currView][itemID];
@@ -313,21 +317,21 @@ function loadItemSelections(itemID) {
                 userInputBox.value = '';
             }
         }
-        /*if (selection.itemColor) {
+        if (selection.itemColor) {
             const colorCanvas = document.getElementById('colorCanvas');
             const colorCtx = colorCanvas.getContext('2d');
             const colorImg = document.getElementById('color-wheel');
             colorCtx.clearRect(0,0,colorCanvas.width,colorCanvas.height);
             colorCtx.drawImage(colorImg,0,0,colorCanvas.width,colorCanvas.height);
             colorCtx.beginPath();
-            colorCtx.arc(colorX, colorY, 6, 0, 2 * Math.PI);
+            colorCtx.arc(selection.colorX, selection.colorY, 6, 0, 2 * Math.PI);
             colorCtx.lineWidth = 2;
             colorCtx.strokeStyle = 'black';
             colorCtx.stroke();
             const colorRange = document.getElementById('color-range');
-            colorRange.value = selection.colorRangeVal;
+            colorRange.value = selection.gradient;
             colorRange.style.background = `linear-gradient(to right, white, ${selection.itemColor}, black)`;
-        }*/
+        }
     } else {
         resetRadioButtons();
         resetSlider();
@@ -359,7 +363,8 @@ function resetColor() {
     colorCtx.drawImage(colorImg, 0, 0, colorCanvas.width, colorCanvas.height);
     const colorRange = document.getElementById('color-range');
     colorRange.value = 5;
-    colorRange.style.background = `linear-gradient(to right, white, ${selectedColor}, black)`;
+    gradient = 5;
+    colorRange.style.background = `linear-gradient(to right, white, rgba(128, 128, 128, 1), black)`;
 }
 
 //let flashInterval = null;
@@ -369,6 +374,7 @@ let selectedColor = null;
 const defaultColor = 'grey';
 let rgba2 = [];
 let colorX = null, colorY = null;
+let gradient = 5;
 
 document.addEventListener('DOMContentLoaded', function() {
     //draw jacket & color images to canvas
@@ -398,12 +404,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const rect = colorCanvas.getBoundingClientRect();
         colorX = e.clientX - rect.left;
         colorY = e.clientY - rect.top;
+        let selectedItem = null;
         if (rgba[3] !== 0) { //if click isnt on transparent area of image
-            selectedColor = `rgba(${rgba[0]}, ${rgba[1]}, ${rgba[2]}, ${rgba[3] / 255})`;
+            //selectedColor = `rgba(${rgba[0]}, ${rgba[1]}, ${rgba[2]}, ${rgba[3] / 255})`;
+            let baseColor = `rgba(${rgba[0]}, ${rgba[1]}, ${rgba[2]}, ${rgba[3] / 255})`;
             rgba2[0] = rgba[0];
             rgba2[1] = rgba[1];
             rgba2[2] = rgba[2];
-            const selectedItem = document.querySelector('.dropped-item.selected-item');
+            selectedColor = updateShade(gradient);
+            selectedItem = document.querySelector('.dropped-item.selected-item');
             const other = document.querySelector('.other');
             if (selectedItem) {
                 if (selectedItem == other) {
@@ -418,8 +427,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     selectedItem.setAttribute('data-flashing-color', selectedColor);
                 }
                 selectedItem.color = selectedColor;
-                //let lighterColor = `rgba(${rgba[0]+20}, ${rgba[1]+20}, ${rgba[2]+20}, ${rgba[3] / 255})`;
-                document.getElementById('color-range').style.background = `linear-gradient(to right, white, ${selectedColor}, black)`;
+                document.getElementById('color-range').style.background = `linear-gradient(to right, white, ${baseColor}, black)`;
+                let radioValue;
+                const selectedRadio = document.querySelector('input[name="item-movement"]:checked');
+                if (selectedRadio) {
+                    radioValue = selectedRadio.value;
+                } else {
+                    radioValue = null;
+                }
+                saveItemSelections(selectedItem.id, radioValue, document.getElementById("speed-range").value, document.getElementById("custom-input").value, selectedColor, colorX, colorY, gradient);
             }
             colorCtx.clearRect(0,0,colorCanvas.width,colorCanvas.height);
             colorCtx.drawImage(document.getElementById('color-wheel'),0,0,colorCanvas.width,colorCanvas.height);
@@ -431,7 +447,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     document.getElementById('color-range').addEventListener('input', function() {
-        selectedColor = updateShade(this.value);
+        gradient = this.value;
+        selectedColor = updateShade(gradient);
         const selectedItem = document.querySelector('.dropped-item.selected-item');
         const other = document.querySelector('.other');
         if (selectedItem) {
@@ -447,6 +464,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 selectedItem.setAttribute('data-flashing-color', selectedColor);
             }
             selectedItem.color = selectedColor;
+            let radioValue;
+            const selectedRadio = document.querySelector('input[name="item-movement"]:checked');
+            if (selectedRadio) {
+                radioValue = selectedRadio.value;
+            } else {
+                radioValue = null;
+            }
+            saveItemSelections(selectedItem.id, radioValue, document.getElementById("speed-range").value, document.getElementById("custom-input").value, selectedColor, colorX, colorY, gradient);
         }
     });
     //shift click
@@ -504,6 +529,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 clickItem.style.display = 'none';
                 clickOpen = false;
             } else if (e.target.id == 'click-light1') {
+                selectedColor = defaultColor;
+                colorX = null, colorY = null;
                 clickedItem = document.getElementById('light-ind').cloneNode(true);
                 clickedItem.id = `${'light-ind'}-${Date.now()}`;
                 clickedItem.className = document.getElementById('light-ind').className + ' dropped-item';
@@ -525,6 +552,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     selectItem(clickedItem);
                 });
             } else if (e.target.id == 'click-light2') {
+                selectedColor = defaultColor;
+                colorX = null, colorY = null;
                 const ogLights = document.querySelector('.option #light-strip');
                 const lightClonedNode = ogLights.cloneNode(true);
                 lightClonedNode.id = `light-strip-${Date.now()}`;
@@ -621,7 +650,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const selectedItem = document.querySelector('.dropped-item.selected-item');
             if (selectedItem) {
                 const sliderVal = document.getElementById("speed-range").value;
-                saveItemSelections(selectedItem.id, this.value, sliderVal, document.getElementById("custom-input").value);
+                saveItemSelections(selectedItem.id, this.value, sliderVal, document.getElementById("custom-input").value, selectedColor, colorX, colorY, gradient);
                 if (radio.value.includes('Light on')) {
                     stopFlash(selectedItem);
                 } else if (radio.value.includes('Flash')) {
@@ -689,7 +718,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 radioValue = null;
             }
-            saveItemSelections(selectedItem.id, radioValue, document.getElementById("speed-range").value, this.value);
+            saveItemSelections(selectedItem.id, radioValue, document.getElementById("speed-range").value, this.value, selectedColor, colorX, colorY, gradient);
             selectedItem.userinput = document.getElementById("custom-input").value;
         }
     });
@@ -704,7 +733,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 radioValue = null;
             }
-            saveItemSelections(selectedItem.id, radioValue, this.value, document.getElementById("custom-input").value);
+            saveItemSelections(selectedItem.id, radioValue, this.value, document.getElementById("custom-input").value, selectedColor, colorX, colorY, gradient);
             selectedItem.speed = this.value;
             updateSpeed(this.value);
         }
