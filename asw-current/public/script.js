@@ -43,6 +43,7 @@ function drag(e) {
 }
 function drop(e) {
     e.preventDefault();
+    //saveState(currView);
     var data = e.dataTransfer.getData("text");
     const item = document.getElementById(data);
     const dropArea = document.getElementById('jacketbox');
@@ -294,6 +295,10 @@ var itemSelections = {
 };
 function saveItemSelections(itemID, radioSelection, sliderValue, userInput, itemColor, colorX, colorY, gradient) {
     itemSelections[currView][itemID] = {radioSelection, sliderValue, userInput, itemColor, colorX, colorY, gradient};
+    /*const prevState = {itemID, radioSelection, sliderValue, userInput, itemColor, colorX, colorY, gradient};
+    undoStack.push({...prevState});
+    redoStack = [];
+    itemSelections[currView][itemID] = {...prevState};*/
 }
 function loadItemSelections(itemID) {
     const selection = itemSelections[currView][itemID];
@@ -1034,18 +1039,49 @@ function duplicate() {
     }
 }
 
+let undoStack = [];
+let redoStack = [];
 function undo() {
-    //WIP: testing in other file
+    if (undoStack.length > 0) {
+        const lastState = undoStack.pop();
+        redoStack.push({...itemSelections[currView][lastState.id]});
+        loadItemSelections(lastState.id);
+    }
 }
-
 function redo() {
-    //WIP: testing in other file
+    if (redoStack.length > 0) {
+        const lastState = redoStack.pop();
+        undoStack.push({...itemSelections[currView][lastState.id]});
+        itemSelections[currView][lastState.id] = {...lastState};
+        loadItemSelections(lastState.id);
+    }
+}
+function saveState(view) {
+
+}
+function loadState(state) {
+
 }
 
 //delete selected item
 function deleteItem() {
     const selectedItem = document.querySelector('.dropped-item.selected-item');
     if (selectedItem) {
+        /*const prevState = {
+            itemID: selectedItem.id,
+            innerHTML: selectedItem.innerHTML,
+            position: {left: selectedItem.style.left, top: selectedItem.style.top},
+            radioSelection: itemSelections[currView][selectedItem.id].radioSelection,
+            sliderValue: itemSelections[currView][selectedItem.id].sliderValue,
+            userInput: itemSelections[currView][selectedItem.id].userInput,
+            itemColor: itemSelections[currView][selectedItem.id].itemColor,
+            colorX: itemSelections[currView][selectedItem.id].colorX,
+            colorY: itemSelections[currView][selectedItem.id].colorY,
+            gradient: itemSelections[currView][selectedItem.id].gradient
+        };
+        undoStack.push({...prevState});
+        redoStack = [];
+        saveState(currView);*/
         if (currView == 'front') {
             for (let i = 0; i < frontItems.length; i++) {
                 if (frontItems[i].id == selectedItem.id) {

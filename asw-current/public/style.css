@@ -182,10 +182,12 @@ body {
 
 .customization {
   width: 10%;
+  height: 100vh;
   padding: 120px;
   position: absolute;
   right: 0;
   padding-top: 95px;
+  overflow-y: auto;
 }
 /*.customization {
   width: 150px;
@@ -198,7 +200,7 @@ body {
   /*padding: 95px 100px 15px;
   overflow-y: auto;
 }
-.customization::after {
+/*.customization::after {
   content: ''; 
   height: 50px;
   display: block;
@@ -474,7 +476,7 @@ body {
   cursor: pointer;
   background-color: #9be4fc;
   border-radius: 3px;
-  border: #9be4fc;
+  border-color: #9be4fc;
   display: flex;
   align-items: center;
   justify-content: center;
