@@ -374,8 +374,8 @@ function resetColor() {
 
 //let flashInterval = null;
 const flashingItems = new Set();
-let currSpeed = null;
-let selectedColor = null;
+//let currSpeed = null;
+//let selectedColor = null;
 const defaultColor = 'grey';
 let rgba2 = [];
 let colorX = null, colorY = null;
@@ -416,7 +416,7 @@ document.addEventListener('DOMContentLoaded', function() {
             rgba2[0] = rgba[0];
             rgba2[1] = rgba[1];
             rgba2[2] = rgba[2];
-            selectedColor = updateShade(gradient);
+            let selectedColor = updateShade(gradient);
             selectedItem = document.querySelector('.dropped-item.selected-item');
             const other = document.querySelector('.other');
             if (selectedItem) {
@@ -424,6 +424,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     other.style.borderBottomColor = selectedColor;
                     other.style.backgroundColor = transparent;
                 }
+                selectedItem.setAttribute('data-flashing-color', selectedColor);
                 selectedItem.style.backgroundColor = selectedColor;
                 selectedItem.querySelectorAll('.circle, .rectangle, .battery1, .battery2, .rectangle2, .trapezoid, .fur1, .fur2').forEach(part => {
                     part.style.backgroundColor = selectedColor;
@@ -453,7 +454,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     document.getElementById('color-range').addEventListener('input', function() {
         gradient = this.value;
-        selectedColor = updateShade(gradient);
+        let selectedColor = updateShade(gradient);
         const selectedItem = document.querySelector('.dropped-item.selected-item');
         const other = document.querySelector('.other');
         if (selectedItem) {
@@ -643,10 +644,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     //slider functionality
     var slider = document.getElementById("speed-range");
-    var output = document.getElementById("value");
-    output.innerHTML = slider.value;
+    //var output = document.getElementById("value");
+    //output.innerHTML = slider.value;
     slider.oninput = function() {
-        output.innerHTML = this.value;
+        //output.innerHTML = this.value;
         //currSpeed = this.value * 10;
     }
     //saving radio button selection
@@ -738,6 +739,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 radioValue = null;
             }
+            selectedItem.setAttribute('data-speed', this.value*100);
             saveItemSelections(selectedItem.id, radioValue, this.value, document.getElementById("custom-input").value, selectedColor, colorX, colorY, gradient);
             selectedItem.speed = this.value;
             updateSpeed(this.value);
@@ -882,18 +884,20 @@ function flashAnimation(item, flashPattern) {
     }
     flashingItems.add(item);
     let lights = Array.from(item.querySelectorAll('.circle'));
+    let selectedColor = item.getAttribute('data-flashing-color');
+    let currSpeed = parseInt(item.getAttribute('data-speed')) || 400;
     if (!selectedColor) {
         item.setAttribute('data-flashing-color', defaultColor);
     } else {
         item.setAttribute('data-flashing-color', selectedColor);
     }
     if (flashPattern == 'trickle-up' || flashPattern == 'trickle-down') {
-
         if (flashPattern == 'trickle-up') {
             lights.reverse();
         }
         let currLight = 0; //current light that's flashing
         item.flashInterval = setInterval(() => {
+            selectedColor = normalizeColorStr(item.getAttribute('data-flashing-color'));
             for (let i = 0; i < lights.length; i++) {
                 if (i == currLight) {
                     lights[i].style.backgroundColor = selectedColor;
@@ -905,6 +909,7 @@ function flashAnimation(item, flashPattern) {
         }, currSpeed);
     } else if (flashPattern == 'random-fl') {
         item.flashInterval = setInterval(() => {
+            selectedColor = normalizeColorStr(item.getAttribute('data-flashing-color'));
             for (let i = 0; i < lights.length; i++) {
                 const randomFlash = Math.random();
                 if (randomFlash > 0.5) {
@@ -915,32 +920,6 @@ function flashAnimation(item, flashPattern) {
             }
         }, currSpeed);
     } else { //default flash
-        /*item.flashInterval = setInterval(() => {
-            flashingItems.forEach(flashingItem => {
-                let flashingColor = normalizeColorStr(flashingItem.getAttribute('data-flashing-color'));
-                let currColor = null;
-                if (!flashingColor) {
-                    flashingColor = defaultColor;
-                }
-                if (flashingItem.classList.contains('light-ind')) {
-                    currColor = normalizeColorStr(flashingItem.style.backgroundColor);
-                    if (currColor == flashingColor) {
-                        flashingItem.style.backgroundColor = '#bbb';
-                    } else {
-                        flashingItem.style.backgroundColor = flashingColor;
-                    }
-                } else {
-                    flashingItem.querySelectorAll('.rectangle, .circle').forEach(part => {
-                        currColor = normalizeColorStr(part.style.backgroundColor);
-                        if (currColor == flashingColor) {
-                            part.style.backgroundColor = '#bbb';
-                        } else {
-                            part.style.backgroundColor = flashingColor;
-                        }
-                    });
-                }
-            });
-        }, currSpeed);*/
         let isOn = false;
         item.flashInterval = setInterval(() => {
             let flashingColor = normalizeColorStr(item.getAttribute('data-flashing-color'));
@@ -968,6 +947,7 @@ function flashAnimation(item, flashPattern) {
 }
 //light on & no flash option
 function stopFlash(item) {
+    let selectedColor = item.getAttribute('data-flashing-color');
     if (item.flashInterval) { 
         clearInterval(item.flashInterval);
         item.flashInterval = null;
