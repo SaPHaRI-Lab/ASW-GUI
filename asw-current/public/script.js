@@ -71,11 +71,13 @@ function drop(e) {
             if (clonedItem.id.startsWith('light-ind')) {
                 selectedColor = defaultColor;
                 colorX = null, colorY = null;
+                clonedItem.setAttribute('data-speed', 400);
                 document.querySelector('input[name="item-movement"][value="Flash ind"]').checked = true;
                 document.querySelector('input[name="item-movement"][value="Flash ind"]').dispatchEvent(new Event('change'));
             } else if (clonedItem.id.startsWith('light-strip')) {
                 selectedColor = defaultColor;
                 colorX = null, colorY = null;
+                clonedItem.setAttribute('data-speed', 400);
                 document.querySelector('input[name="item-movement"][value="Flash str"]').checked = true;
                 document.querySelector('input[name="item-movement"][value="Flash str"]').dispatchEvent(new Event('change'));
             }
@@ -553,6 +555,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 selectItem(clickedItem);
                 document.querySelector('input[name="item-movement"][value="Flash ind"]').checked = true;
                 document.querySelector('input[name="item-movement"][value="Flash ind"]').dispatchEvent(new Event('change'));
+                clickedItem.setAttribute('data-speed', 400);
                 flashAnimation(clickedItem);
                 clonedItem.addEventListener('click', function() {
                     selectItem(clickedItem);
@@ -577,6 +580,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 selectItem(lightClonedNode);
                 document.querySelector('input[name="item-movement"][value="Flash str"]').checked = true;
                 document.querySelector('input[name="item-movement"][value="Flash str"]').dispatchEvent(new Event('change'));
+                lightClonedNode.setAttribute('data-speed', 400);
                 flashAnimation(lightClonedNode);
                 lightClonedNode.addEventListener('click', function() {
                     selectItem(lightClonedNode);
@@ -649,6 +653,7 @@ document.addEventListener('DOMContentLoaded', function() {
     slider.oninput = function() {
         //output.innerHTML = this.value;
         //currSpeed = this.value * 10;
+        document.querySelector('.dropped-item.selected-item').setAttribute('data-speed', updateSpeed(this.value));//this.value*100);
     }
     //saving radio button selection
     document.querySelectorAll('input[name="item-movement"]').forEach(radio => {
@@ -660,53 +665,53 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (radio.value.includes('Light on')) {
                     stopFlash(selectedItem);
                 } else if (radio.value.includes('Flash')) {
-                    updateSpeed(sliderVal);
+                    //updateSpeed(sliderVal);
                     flashAnimation(selectedItem);
-                    document.getElementById("speed-range").addEventListener('input', function() {
+                    //document.getElementById("speed-range").addEventListener('input', function() {
                         const currMovement = document.querySelector('input[name="item-movement"]:checked');
                         if (currMovement && currMovement.value.includes('Light on')) {
                             stopFlash(selectedItem);
                             return;
                         }
-                        updateSpeed(this.value);
+                        //updateSpeed(this.value);
                         flashAnimation(selectedItem);
-                    });
+                    //});
                 } else if (radio.value.includes('Trickle up')) {
-                    updateSpeed(sliderVal);
+                    //updateSpeed(sliderVal);
                     flashAnimation(selectedItem, 'trickle-up');
-                    document.getElementById("speed-range").addEventListener('input', function() {
+                    //document.getElementById("speed-range").addEventListener('input', function() {
                         const currMovement = document.querySelector('input[name="item-movement"]:checked');
                         if (currMovement && currMovement.value.includes('Light on')) {
                             stopFlash(selectedItem);
                             return;
                         }
-                        updateSpeed(this.value);
+                        //updateSpeed(this.value);
                         flashAnimation(selectedItem, 'trickle-up');
-                    });
+                    //});
                 } else if (radio.value.includes('Trickle down')) {
-                    updateSpeed(sliderVal);
+                    //updateSpeed(sliderVal);
                     flashAnimation(selectedItem, 'trickle-down');
-                    document.getElementById("speed-range").addEventListener('input', function() {
+                    //document.getElementById("speed-range").addEventListener('input', function() {
                         const currMovement = document.querySelector('input[name="item-movement"]:checked');
                         if (currMovement && currMovement.value.includes('Light on')) {
                             stopFlash(selectedItem);
                             return;
                         }
-                        updateSpeed(this.value);
+                        //updateSpeed(this.value);
                         flashAnimation(selectedItem, 'trickle-down');
-                    });
+                    //});
                 } else if (radio.value.includes('Random fl')) {
-                    updateSpeed(sliderVal);
+                    //updateSpeed(sliderVal);
                     flashAnimation(selectedItem, 'random-fl');
-                    document.getElementById("speed-range").addEventListener('input', function() {
+                    //document.getElementById("speed-range").addEventListener('input', function() {
                         const currMovement = document.querySelector('input[name="item-movement"]:checked');
                         if (currMovement && currMovement.value.includes('Light on')) {
                             stopFlash(selectedItem);
                             return;
                         }
-                        updateSpeed(this.value);
+                        //updateSpeed(this.value);
                         flashAnimation(selectedItem, 'random-fl');
-                    });
+                    //});
                 }
                 selectedItem.radioSelection = this.value;
                 selectedItem.speed = sliderVal;
@@ -739,10 +744,13 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 radioValue = null;
             }
-            selectedItem.setAttribute('data-speed', this.value*100);
+            selectedItem.setAttribute('data-speed', updateSpeed(this.value));//this.value*100);
             saveItemSelections(selectedItem.id, radioValue, this.value, document.getElementById("custom-input").value, selectedColor, colorX, colorY, gradient);
             selectedItem.speed = this.value;
-            updateSpeed(this.value);
+            //updateSpeed(this.value);
+            if (flashingItems.has(selectedItem)) {
+                flashAnimation(selectedItem, selectedItem.radioSelection.toLowerCase().replace(/\s+/g, '-'));
+            }
         }
     });
     //delete item
@@ -853,17 +861,19 @@ function updateShade(sliderVal) {
 }
 
 function updateSpeed(sliderVal) {
+    let speed;
     if (sliderVal == 1) {
-        currSpeed = 700;
+        speed = 700;
     } else if (sliderVal == 2) {
-        currSpeed = 550;
+        speed = 550;
     } else if (sliderVal == 3) {
-        currSpeed = 400;
+        speed = 400;
     } else if (sliderVal == 4) {
-        currSpeed = 250;
+        speed = 250;
     } else if (sliderVal == 5) {
-        currSpeed = 90;
+        speed = 90;
     }
+    return speed;
 }
 
 //normalize/reformat color string so rgba comparison works
@@ -885,7 +895,7 @@ function flashAnimation(item, flashPattern) {
     flashingItems.add(item);
     let lights = Array.from(item.querySelectorAll('.circle'));
     let selectedColor = item.getAttribute('data-flashing-color');
-    let currSpeed = parseInt(item.getAttribute('data-speed')) || 400;
+    let currSpeed = parseInt(item.getAttribute('data-speed'));
     if (!selectedColor) {
         item.setAttribute('data-flashing-color', defaultColor);
     } else {
@@ -996,8 +1006,9 @@ function duplicate() {
             itemSelections[currView][clonedItem.id] = {...ogCustomizations};
             clonedItem.radioSelection = ogCustomizations.radioSelection;
             clonedItem.speed = ogCustomizations.sliderValue;
+            clonedItem.setAttribute('data-speed', updateSpeed(ogCustomizations.sliderValue));//ogCustomizations.sliderValue*100);
             clonedItem.userinput = ogCustomizations.userInput;
-            clonedItem.color = selectedColor;
+            clonedItem.color = ogCustomizations.itemColor;
             clonedItem.x = xVal;
             clonedItem.y = yVal; //maybe double check the coords
         } else {
@@ -1011,9 +1022,11 @@ function duplicate() {
         clonedItem.addEventListener('click', function() {
             selectItem(clonedItem);
         });
-        clonedItem.setAttribute('data-flashing-color', selectedItem.getAttribute('data-flashing-color'));//flashing works for dupe but not other animations
+        clonedItem.setAttribute('data-flashing-color', selectedItem.getAttribute('data-flashing-color'));
         if (flashingItems.has(selectedItem)) {
             flashingItems.add(clonedItem);
+            let formattedRadioSelection = clonedItem.radioSelection.toLowerCase().replace(/\s+/g, '-');
+            flashAnimation(clonedItem, formattedRadioSelection);
         }
         selectItem(clonedItem);
     }
@@ -1037,10 +1050,10 @@ function redo() {
     }
 }
 function saveState(view) {
-
+//WIP
 }
 function loadState(state) {
-
+//WIP
 }
 
 //delete selected item

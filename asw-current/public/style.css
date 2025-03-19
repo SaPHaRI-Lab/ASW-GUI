@@ -188,6 +188,7 @@ body {
   right: 0;
   padding-top: 95px;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 /*.customization {
   width: 150px;
@@ -351,7 +352,7 @@ body {
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   width: 250px;
-  height: 150px;
+  height: 180px;
   text-align: center;
   z-index: 15;
   position: absolute;
@@ -363,6 +364,9 @@ body {
   cursor: pointer;
   transition: background-color 0.2s ease;
   font-size: 15px;
+}
+.click-item:nth-child(7) {
+  grid-column: 2;
 }
 
 .color {
