@@ -43,6 +43,7 @@ function drag(e) {
 }
 function drop(e) {
     e.preventDefault();
+    //saveState(currView);
     var data = e.dataTransfer.getData("text");
     const item = document.getElementById(data);
     const dropArea = document.getElementById('jacketbox');
@@ -68,9 +69,15 @@ function drop(e) {
             positionItem(clonedItem, e, dropArea);
             selectItem(clonedItem);
             if (clonedItem.id.startsWith('light-ind')) {
+                selectedColor = defaultColor;
+                colorX = null, colorY = null;
+                clonedItem.setAttribute('data-speed', 400);
                 document.querySelector('input[name="item-movement"][value="Flash ind"]').checked = true;
                 document.querySelector('input[name="item-movement"][value="Flash ind"]').dispatchEvent(new Event('change'));
             } else if (clonedItem.id.startsWith('light-strip')) {
+                selectedColor = defaultColor;
+                colorX = null, colorY = null;
+                clonedItem.setAttribute('data-speed', 400);
                 document.querySelector('input[name="item-movement"][value="Flash str"]').checked = true;
                 document.querySelector('input[name="item-movement"][value="Flash str"]').dispatchEvent(new Event('change'));
             }
@@ -151,7 +158,7 @@ function selectItem(item) {
         document.getElementById('custom-title').textContent = "Write my own:";
     }
     let baseId = item.id;
-    if (baseId.includes('copy')) {
+    if (baseId.includes('CLONED')) {
         baseId = item.id.split('-').slice(0, -2).join('-');
     } else {
         baseId = item.id.split('-').slice(0, -1).join('-');
@@ -162,6 +169,82 @@ function selectItem(item) {
     }
     loadItemSelections(item.id);
 }
+/*let selectedItems = new Set();
+function selectItem(item, e=null) {
+    const itemType = item.id.split('-')[0];
+    if (!e || !e.shiftKey) {
+        selectedItems.forEach(selected => selected.classList.remove('selected-item'));
+        selectedItems.clear();
+    }
+    if (e && e.shiftKey) {
+        if (selectedItems.size > 0) {
+            const firstItemType = [...selectedItems][0].id.split('-')[0];
+            if (firstItemType !== itemType) {
+                return;
+            }
+        }
+        if (selectedItems.has(item)) {
+            selectedItems.delete(item);
+            item.classList.remove('selected-item');
+        } else {
+            selectedItems.add(item);
+            item.classList.add('selected-item');
+        }
+    } else {
+        //selectedItems.forEach(selected => selected.classList.remove('selected-item'));
+        //selectedItems.clear();
+        /*document.querySelectorAll('.dropped-item').forEach(item => {
+            item.classList.remove('selected-item');
+            item.querySelectorAll('.circle, .rectangle, .battery1, .battery2, .rectangle2, .trapezoid, .fur1, .fur2').forEach(part => part.classList.remove('selected-item'));
+            if (item.querySelector('.rotate-circle')) {
+                item.querySelector('.rotate-circle').remove();
+            }
+        });*/
+        /*selectedItems.add(item);
+        item.classList.add('selected-item');
+    }
+    selectedItems.forEach(selected => {
+        const rotateCircle = document.createElement('div');
+        rotateCircle.classList.add('rotate-circle');
+        selected.appendChild(rotateCircle);
+        rotateItem(selected, rotateCircle);
+        if (selected.id.startsWith('light-strip') || selected.id.startsWith('battery') || selected.id.startsWith('speaker') || selected.id.startsWith('fur-patch')) {
+            selected.style.border = 'none';
+        }
+        if (selected.id.startsWith('light-strip')) {
+            rotateCircle.style.top = '-27px';
+            rotateCircle.style.transform = 'translateX(30%)';
+        } else if (selected.id.startsWith('battery')) {
+            rotateCircle.style.transform = 'translateX(125%)';
+            selected.style.transformOrigin = "30px 10px";
+        } else if (selected.id.startsWith('fur-patch')) {
+            rotateCircle.style.transform = 'translateX(100%)';
+            selected.style.transformOrigin = "20px 20px";
+        }
+        selected.querySelectorAll('.rectangle, .circle, .battery1, .battery2, .rectangle2, .trapezoid, .fur1, .fur2').forEach(part => part.classList.add('selected-item'));
+        document.querySelectorAll('.movement > div').forEach(div => {
+            div.style.display = 'none';
+        });
+        if (selected.id.startsWith('speaker')) {
+            document.getElementById('movement-title').textContent = "Sound";
+            document.getElementById('custom-title').textContent = "Describe the desired sound:";
+        } else {
+            document.getElementById('movement-title').textContent = "Movement";
+            document.getElementById('custom-title').textContent = "Write my own:";
+        }
+    });
+    let baseId = item.id;
+    if (baseId.includes('copy')) {
+        baseId = item.id.split('-').slice(0, -2).join('-');
+    } else {
+        baseId = item.id.split('-').slice(0, -1).join('-');
+    }
+    const movementElement = document.getElementById(`${baseId}-movement`);
+    if (movementElement) {
+        movementElement.style.display = 'block';
+    }
+    loadItemSelections(item.id);
+}*/
 
 function rotateItem(item, rotateCircle) {
     let rotating = false;
@@ -212,8 +295,12 @@ var itemSelections = {
     front: {},
     back: {}
 };
-function saveItemSelections(itemID, radioSelection, sliderValue, userInput) {
-    itemSelections[currView][itemID] = {radioSelection, sliderValue, userInput};
+function saveItemSelections(itemID, radioSelection, sliderValue, userInput, itemColor, colorX, colorY, gradient) {
+    itemSelections[currView][itemID] = {radioSelection, sliderValue, userInput, itemColor, colorX, colorY, gradient};
+    /*const prevState = {itemID, radioSelection, sliderValue, userInput, itemColor, colorX, colorY, gradient};
+    undoStack.push({...prevState});
+    redoStack = [];
+    itemSelections[currView][itemID] = {...prevState};*/
 }
 function loadItemSelections(itemID) {
     const selection = itemSelections[currView][itemID];
@@ -237,10 +324,26 @@ function loadItemSelections(itemID) {
                 userInputBox.value = '';
             }
         }
+        if (selection.itemColor) {
+            const colorCanvas = document.getElementById('colorCanvas');
+            const colorCtx = colorCanvas.getContext('2d');
+            const colorImg = document.getElementById('color-wheel');
+            colorCtx.clearRect(0,0,colorCanvas.width,colorCanvas.height);
+            colorCtx.drawImage(colorImg,0,0,colorCanvas.width,colorCanvas.height);
+            colorCtx.beginPath();
+            colorCtx.arc(selection.colorX, selection.colorY, 6, 0, 2 * Math.PI);
+            colorCtx.lineWidth = 2;
+            colorCtx.strokeStyle = 'black';
+            colorCtx.stroke();
+            const colorRange = document.getElementById('color-range');
+            colorRange.value = selection.gradient;
+            colorRange.style.background = `linear-gradient(to right, white, ${selection.itemColor}, black)`;
+        }
     } else {
         resetRadioButtons();
         resetSlider();
         resetUserInput();
+        resetColor();
     }
 }
 function resetRadioButtons() {
@@ -259,13 +362,26 @@ function resetUserInput() {
         userInputBox.value = '';
     }
 }
+function resetColor() {
+    const colorCanvas = document.getElementById('colorCanvas');
+    const colorCtx = colorCanvas.getContext('2d');
+    const colorImg = document.getElementById('color-wheel');
+    colorCtx.clearRect(0, 0, colorCanvas.width, colorCanvas.height);
+    colorCtx.drawImage(colorImg, 0, 0, colorCanvas.width, colorCanvas.height);
+    const colorRange = document.getElementById('color-range');
+    colorRange.value = 5;
+    gradient = 5;
+    colorRange.style.background = `linear-gradient(to right, white, rgba(128, 128, 128, 1), black)`;
+}
 
-let flashInterval = null;
+//let flashInterval = null;
 const flashingItems = new Set();
-let currSpeed = null;
-let selectedColor = null;
+//let currSpeed = null;
+//let selectedColor = null;
 const defaultColor = 'grey';
 let rgba2 = [];
+let colorX = null, colorY = null;
+let gradient = 5;
 
 document.addEventListener('DOMContentLoaded', function() {
     //draw jacket & color images to canvas
@@ -293,20 +409,24 @@ document.addEventListener('DOMContentLoaded', function() {
         var imgData = colorCtx.getImageData(e.offsetX, e.offsetY, 1, 1);
         var rgba = imgData.data;
         const rect = colorCanvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+        colorX = e.clientX - rect.left;
+        colorY = e.clientY - rect.top;
+        let selectedItem = null;
         if (rgba[3] !== 0) { //if click isnt on transparent area of image
-            selectedColor = `rgba(${rgba[0]}, ${rgba[1]}, ${rgba[2]}, ${rgba[3] / 255})`;
+            //selectedColor = `rgba(${rgba[0]}, ${rgba[1]}, ${rgba[2]}, ${rgba[3] / 255})`;
+            let baseColor = `rgba(${rgba[0]}, ${rgba[1]}, ${rgba[2]}, ${rgba[3] / 255})`;
             rgba2[0] = rgba[0];
             rgba2[1] = rgba[1];
             rgba2[2] = rgba[2];
-            const selectedItem = document.querySelector('.dropped-item.selected-item');
+            let selectedColor = updateShade(gradient);
+            selectedItem = document.querySelector('.dropped-item.selected-item');
             const other = document.querySelector('.other');
             if (selectedItem) {
                 if (selectedItem == other) {
                     other.style.borderBottomColor = selectedColor;
                     other.style.backgroundColor = transparent;
                 }
+                selectedItem.setAttribute('data-flashing-color', selectedColor);
                 selectedItem.style.backgroundColor = selectedColor;
                 selectedItem.querySelectorAll('.circle, .rectangle, .battery1, .battery2, .rectangle2, .trapezoid, .fur1, .fur2').forEach(part => {
                     part.style.backgroundColor = selectedColor;
@@ -315,20 +435,28 @@ document.addEventListener('DOMContentLoaded', function() {
                     selectedItem.setAttribute('data-flashing-color', selectedColor);
                 }
                 selectedItem.color = selectedColor;
-                //let lighterColor = `rgba(${rgba[0]+20}, ${rgba[1]+20}, ${rgba[2]+20}, ${rgba[3] / 255})`;
-                document.getElementById('color-range').style.background = `linear-gradient(to right, white, ${selectedColor}, black)`;
+                document.getElementById('color-range').style.background = `linear-gradient(to right, white, ${baseColor}, black)`;
+                let radioValue;
+                const selectedRadio = document.querySelector('input[name="item-movement"]:checked');
+                if (selectedRadio) {
+                    radioValue = selectedRadio.value;
+                } else {
+                    radioValue = null;
+                }
+                saveItemSelections(selectedItem.id, radioValue, document.getElementById("speed-range").value, document.getElementById("custom-input").value, selectedColor, colorX, colorY, gradient);
             }
             colorCtx.clearRect(0,0,colorCanvas.width,colorCanvas.height);
             colorCtx.drawImage(document.getElementById('color-wheel'),0,0,colorCanvas.width,colorCanvas.height);
             colorCtx.beginPath();
-            colorCtx.arc(x, y, 6, 0, 2 * Math.PI);
+            colorCtx.arc(colorX, colorY, 6, 0, 2 * Math.PI);
             colorCtx.lineWidth = 2;
             colorCtx.strokeStyle = 'black';
             colorCtx.stroke();
         }
     });
     document.getElementById('color-range').addEventListener('input', function() {
-        selectedColor = updateShade(this.value);
+        gradient = this.value;
+        let selectedColor = updateShade(gradient);
         const selectedItem = document.querySelector('.dropped-item.selected-item');
         const other = document.querySelector('.other');
         if (selectedItem) {
@@ -344,8 +472,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 selectedItem.setAttribute('data-flashing-color', selectedColor);
             }
             selectedItem.color = selectedColor;
+            let radioValue;
+            const selectedRadio = document.querySelector('input[name="item-movement"]:checked');
+            if (selectedRadio) {
+                radioValue = selectedRadio.value;
+            } else {
+                radioValue = null;
+            }
+            saveItemSelections(selectedItem.id, radioValue, document.getElementById("speed-range").value, document.getElementById("custom-input").value, selectedColor, colorX, colorY, gradient);
         }
     });
+    //shift click
+    /*document.addEventListener("click", function(e) {
+        const item = e.target.closest(".dropped-item"); 
+        if (item) {
+            selectItem(item, e);
+        }
+    });*/
     //create item when clicking jacket
     let clickOpen = false;
     const clickItem = document.querySelector('.click-create');
@@ -394,6 +537,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 clickItem.style.display = 'none';
                 clickOpen = false;
             } else if (e.target.id == 'click-light1') {
+                selectedColor = defaultColor;
+                colorX = null, colorY = null;
                 clickedItem = document.getElementById('light-ind').cloneNode(true);
                 clickedItem.id = `${'light-ind'}-${Date.now()}`;
                 clickedItem.className = document.getElementById('light-ind').className + ' dropped-item';
@@ -410,11 +555,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 selectItem(clickedItem);
                 document.querySelector('input[name="item-movement"][value="Flash ind"]').checked = true;
                 document.querySelector('input[name="item-movement"][value="Flash ind"]').dispatchEvent(new Event('change'));
+                clickedItem.setAttribute('data-speed', 400);
                 flashAnimation(clickedItem);
                 clonedItem.addEventListener('click', function() {
                     selectItem(clickedItem);
                 });
             } else if (e.target.id == 'click-light2') {
+                selectedColor = defaultColor;
+                colorX = null, colorY = null;
                 const ogLights = document.querySelector('.option #light-strip');
                 const lightClonedNode = ogLights.cloneNode(true);
                 lightClonedNode.id = `light-strip-${Date.now()}`;
@@ -432,6 +580,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 selectItem(lightClonedNode);
                 document.querySelector('input[name="item-movement"][value="Flash str"]').checked = true;
                 document.querySelector('input[name="item-movement"][value="Flash str"]').dispatchEvent(new Event('change'));
+                lightClonedNode.setAttribute('data-speed', 400);
                 flashAnimation(lightClonedNode);
                 lightClonedNode.addEventListener('click', function() {
                     selectItem(lightClonedNode);
@@ -499,11 +648,12 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     //slider functionality
     var slider = document.getElementById("speed-range");
-    var output = document.getElementById("value");
-    output.innerHTML = slider.value;
+    //var output = document.getElementById("value");
+    //output.innerHTML = slider.value;
     slider.oninput = function() {
-        output.innerHTML = this.value;
+        //output.innerHTML = this.value;
         //currSpeed = this.value * 10;
+        document.querySelector('.dropped-item.selected-item').setAttribute('data-speed', updateSpeed(this.value));//this.value*100);
     }
     //saving radio button selection
     document.querySelectorAll('input[name="item-movement"]').forEach(radio => {
@@ -511,57 +661,57 @@ document.addEventListener('DOMContentLoaded', function() {
             const selectedItem = document.querySelector('.dropped-item.selected-item');
             if (selectedItem) {
                 const sliderVal = document.getElementById("speed-range").value;
-                saveItemSelections(selectedItem.id, this.value, sliderVal, document.getElementById("custom-input").value);
+                saveItemSelections(selectedItem.id, this.value, sliderVal, document.getElementById("custom-input").value, selectedColor, colorX, colorY, gradient);
                 if (radio.value.includes('Light on')) {
                     stopFlash(selectedItem);
                 } else if (radio.value.includes('Flash')) {
-                    updateSpeed(sliderVal);
+                    //updateSpeed(sliderVal);
                     flashAnimation(selectedItem);
-                    document.getElementById("speed-range").addEventListener('input', function() {
+                    //document.getElementById("speed-range").addEventListener('input', function() {
                         const currMovement = document.querySelector('input[name="item-movement"]:checked');
                         if (currMovement && currMovement.value.includes('Light on')) {
                             stopFlash(selectedItem);
                             return;
                         }
-                        updateSpeed(this.value);
+                        //updateSpeed(this.value);
                         flashAnimation(selectedItem);
-                    });
+                    //});
                 } else if (radio.value.includes('Trickle up')) {
-                    updateSpeed(sliderVal);
+                    //updateSpeed(sliderVal);
                     flashAnimation(selectedItem, 'trickle-up');
-                    document.getElementById("speed-range").addEventListener('input', function() {
+                    //document.getElementById("speed-range").addEventListener('input', function() {
                         const currMovement = document.querySelector('input[name="item-movement"]:checked');
                         if (currMovement && currMovement.value.includes('Light on')) {
                             stopFlash(selectedItem);
                             return;
                         }
-                        updateSpeed(this.value);
+                        //updateSpeed(this.value);
                         flashAnimation(selectedItem, 'trickle-up');
-                    });
+                    //});
                 } else if (radio.value.includes('Trickle down')) {
-                    updateSpeed(sliderVal);
+                    //updateSpeed(sliderVal);
                     flashAnimation(selectedItem, 'trickle-down');
-                    document.getElementById("speed-range").addEventListener('input', function() {
+                    //document.getElementById("speed-range").addEventListener('input', function() {
                         const currMovement = document.querySelector('input[name="item-movement"]:checked');
                         if (currMovement && currMovement.value.includes('Light on')) {
                             stopFlash(selectedItem);
                             return;
                         }
-                        updateSpeed(this.value);
+                        //updateSpeed(this.value);
                         flashAnimation(selectedItem, 'trickle-down');
-                    });
+                    //});
                 } else if (radio.value.includes('Random fl')) {
-                    updateSpeed(sliderVal);
+                    //updateSpeed(sliderVal);
                     flashAnimation(selectedItem, 'random-fl');
-                    document.getElementById("speed-range").addEventListener('input', function() {
+                    //document.getElementById("speed-range").addEventListener('input', function() {
                         const currMovement = document.querySelector('input[name="item-movement"]:checked');
                         if (currMovement && currMovement.value.includes('Light on')) {
                             stopFlash(selectedItem);
                             return;
                         }
-                        updateSpeed(this.value);
+                        //updateSpeed(this.value);
                         flashAnimation(selectedItem, 'random-fl');
-                    });
+                    //});
                 }
                 selectedItem.radioSelection = this.value;
                 selectedItem.speed = sliderVal;
@@ -579,7 +729,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 radioValue = null;
             }
-            saveItemSelections(selectedItem.id, radioValue, document.getElementById("speed-range").value, this.value);
+            saveItemSelections(selectedItem.id, radioValue, document.getElementById("speed-range").value, this.value, selectedColor, colorX, colorY, gradient);
             selectedItem.userinput = document.getElementById("custom-input").value;
         }
     });
@@ -594,9 +744,13 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 radioValue = null;
             }
-            saveItemSelections(selectedItem.id, radioValue, this.value, document.getElementById("custom-input").value);
+            selectedItem.setAttribute('data-speed', updateSpeed(this.value));//this.value*100);
+            saveItemSelections(selectedItem.id, radioValue, this.value, document.getElementById("custom-input").value, selectedColor, colorX, colorY, gradient);
             selectedItem.speed = this.value;
-            updateSpeed(this.value);
+            //updateSpeed(this.value);
+            if (flashingItems.has(selectedItem)) {
+                flashAnimation(selectedItem, selectedItem.radioSelection.toLowerCase().replace(/\s+/g, '-'));
+            }
         }
     });
     //delete item
@@ -707,17 +861,19 @@ function updateShade(sliderVal) {
 }
 
 function updateSpeed(sliderVal) {
+    let speed;
     if (sliderVal == 1) {
-        currSpeed = 700;
+        speed = 700;
     } else if (sliderVal == 2) {
-        currSpeed = 550;
+        speed = 550;
     } else if (sliderVal == 3) {
-        currSpeed = 400;
+        speed = 400;
     } else if (sliderVal == 4) {
-        currSpeed = 250;
+        speed = 250;
     } else if (sliderVal == 5) {
-        currSpeed = 90;
+        speed = 90;
     }
+    return speed;
 }
 
 //normalize/reformat color string so rgba comparison works
@@ -738,20 +894,20 @@ function flashAnimation(item, flashPattern) {
     }
     flashingItems.add(item);
     let lights = Array.from(item.querySelectorAll('.circle'));
+    let selectedColor = item.getAttribute('data-flashing-color');
+    let currSpeed = parseInt(item.getAttribute('data-speed'));
     if (!selectedColor) {
         item.setAttribute('data-flashing-color', defaultColor);
     } else {
         item.setAttribute('data-flashing-color', selectedColor);
     }
     if (flashPattern == 'trickle-up' || flashPattern == 'trickle-down') {
-        /*if (flashInterval) {
-            clearInterval(flashInterval);
-        }*/
         if (flashPattern == 'trickle-up') {
             lights.reverse();
         }
         let currLight = 0; //current light that's flashing
         item.flashInterval = setInterval(() => {
+            selectedColor = normalizeColorStr(item.getAttribute('data-flashing-color'));
             for (let i = 0; i < lights.length; i++) {
                 if (i == currLight) {
                     lights[i].style.backgroundColor = selectedColor;
@@ -762,10 +918,8 @@ function flashAnimation(item, flashPattern) {
             currLight = (currLight+1) % lights.length;
         }, currSpeed);
     } else if (flashPattern == 'random-fl') {
-        /*if (flashInterval) {
-            clearInterval(flashInterval);
-        }*/
         item.flashInterval = setInterval(() => {
+            selectedColor = normalizeColorStr(item.getAttribute('data-flashing-color'));
             for (let i = 0; i < lights.length; i++) {
                 const randomFlash = Math.random();
                 if (randomFlash > 0.5) {
@@ -776,44 +930,39 @@ function flashAnimation(item, flashPattern) {
             }
         }, currSpeed);
     } else { //default flash
-        /*if (flashInterval) {
-            clearInterval(flashInterval);
-        }*/
+        let isOn = false;
         item.flashInterval = setInterval(() => {
-            flashingItems.forEach(flashingItem => {
-                let flashingColor = normalizeColorStr(flashingItem.getAttribute('data-flashing-color'));
-                let currColor = null;
-                if (!flashingColor) {
-                    flashingColor = defaultColor;
-                }
-                if (flashingItem.classList.contains('light-ind')) {
-                    currColor = normalizeColorStr(flashingItem.style.backgroundColor);
-                    if (currColor == flashingColor) {
-                        flashingItem.style.backgroundColor = '#bbb';
-                    } else {
-                        flashingItem.style.backgroundColor = flashingColor;
-                    }
+            let flashingColor = normalizeColorStr(item.getAttribute('data-flashing-color'));
+            if (!flashingColor) {
+                flashingColor = defaultColor;
+            }
+            isOn = !isOn;
+            if (item.classList.contains('light-ind')) {
+                if (isOn) {
+                    item.style.backgroundColor = flashingColor;
                 } else {
-                    flashingItem.querySelectorAll('.rectangle, .circle').forEach(part => {
-                        currColor = normalizeColorStr(part.style.backgroundColor);
-                        if (currColor == flashingColor) {
-                            part.style.backgroundColor = '#bbb';
-                        } else {
-                            part.style.backgroundColor = flashingColor;
-                        }
-                    });
+                    item.style.backgroundColor = '#bbb';
                 }
-            });
+            } else {
+                item.querySelectorAll('.rectangle, .circle').forEach(part => {
+                    if (isOn) {
+                        part.style.backgroundColor = flashingColor;
+                    } else {
+                        part.style.backgroundColor = '#bbb';
+                    }
+                });
+            }
         }, currSpeed);
     }
 }
 //light on & no flash option
 function stopFlash(item) {
-    flashingItems.delete(item);
-    if (flashingItems.size == 0 && flashInterval) {
-        clearInterval(flashInterval);
-        flashInterval = null;
+    let selectedColor = item.getAttribute('data-flashing-color');
+    if (item.flashInterval) { 
+        clearInterval(item.flashInterval);
+        item.flashInterval = null;
     }
+    flashingItems.delete(item);
     if (item.classList.contains('light-ind')) {
         if (item.getAttribute('data-flashing-color')) {
             item.style.backgroundColor = item.getAttribute('data-flashing-color');
@@ -857,8 +1006,9 @@ function duplicate() {
             itemSelections[currView][clonedItem.id] = {...ogCustomizations};
             clonedItem.radioSelection = ogCustomizations.radioSelection;
             clonedItem.speed = ogCustomizations.sliderValue;
+            clonedItem.setAttribute('data-speed', updateSpeed(ogCustomizations.sliderValue));//ogCustomizations.sliderValue*100);
             clonedItem.userinput = ogCustomizations.userInput;
-            clonedItem.color = selectedColor;
+            clonedItem.color = ogCustomizations.itemColor;
             clonedItem.x = xVal;
             clonedItem.y = yVal; //maybe double check the coords
         } else {
@@ -872,26 +1022,59 @@ function duplicate() {
         clonedItem.addEventListener('click', function() {
             selectItem(clonedItem);
         });
-        clonedItem.setAttribute('data-flashing-color', selectedItem.getAttribute('data-flashing-color'));//flashing works for dupe but not other animations
+        clonedItem.setAttribute('data-flashing-color', selectedItem.getAttribute('data-flashing-color'));
         if (flashingItems.has(selectedItem)) {
             flashingItems.add(clonedItem);
+            let formattedRadioSelection = clonedItem.radioSelection.toLowerCase().replace(/\s+/g, '-');
+            flashAnimation(clonedItem, formattedRadioSelection);
         }
         selectItem(clonedItem);
     }
 }
 
+let undoStack = [];
+let redoStack = [];
 function undo() {
-    //WIP: testing in other file
+    if (undoStack.length > 0) {
+        const lastState = undoStack.pop();
+        redoStack.push({...itemSelections[currView][lastState.id]});
+        loadItemSelections(lastState.id);
+    }
 }
-
 function redo() {
-    //WIP: testing in other file
+    if (redoStack.length > 0) {
+        const lastState = redoStack.pop();
+        undoStack.push({...itemSelections[currView][lastState.id]});
+        itemSelections[currView][lastState.id] = {...lastState};
+        loadItemSelections(lastState.id);
+    }
+}
+function saveState(view) {
+//WIP
+}
+function loadState(state) {
+//WIP
 }
 
 //delete selected item
 function deleteItem() {
     const selectedItem = document.querySelector('.dropped-item.selected-item');
     if (selectedItem) {
+        /*const prevState = {
+            itemID: selectedItem.id,
+            innerHTML: selectedItem.innerHTML,
+            position: {left: selectedItem.style.left, top: selectedItem.style.top},
+            radioSelection: itemSelections[currView][selectedItem.id].radioSelection,
+            sliderValue: itemSelections[currView][selectedItem.id].sliderValue,
+            userInput: itemSelections[currView][selectedItem.id].userInput,
+            itemColor: itemSelections[currView][selectedItem.id].itemColor,
+            colorX: itemSelections[currView][selectedItem.id].colorX,
+            colorY: itemSelections[currView][selectedItem.id].colorY,
+            gradient: itemSelections[currView][selectedItem.id].gradient
+        };
+        undoStack.push({...prevState});
+        redoStack = [];
+        saveState(currView);*/
         if (currView == 'front') {
             for (let i = 0; i < frontItems.length; i++) {
                 if (frontItems[i].id == selectedItem.id) {

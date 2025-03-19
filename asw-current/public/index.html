@@ -1,7 +1,9 @@
 <link rel="stylesheet" href="style.css" />
 <script src="script.js"></script>
-<h1 id="title">Wearable Design</h1>
-<button id="info-button">?</button>
+<div class="title-container">
+  <h1 id="title">Wearable Design</h1>
+  <button id="info-button">?</button>
+</div>
 <body>
   <div class="popup">
     <div class="popup-instructions">
@@ -140,7 +142,7 @@
       <div class="speed">
         <h2 id="speed-title">Speed</h2>
         <input type="range" min="1" max="5" value="3" class="slider" id="speed-range">
-        <p>Value (1=slow, 5=fast): <span id="value"></span></p>
+        <p><span id="value" style="display: none;"></span></p>
       </div>
       <h2 id="movement-title">Movement</h2>
       <div class="movement">

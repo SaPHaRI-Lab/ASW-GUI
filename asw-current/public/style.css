@@ -118,19 +118,45 @@ body {
   position: relative;
 }
 
-.container {
+/*.container {
   display: flex;
   width: 100%;
   height: 100%;
   position: relative;
+}*/
+.container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: stretch;
+  width: 100%;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
 }
 
-.sidebar {
+/*.sidebar {
   width: 10%;
   padding: 70px;
   position: absolute;
   left: 0;
   padding-top: 50px;
+}*/
+.sidebar {
+  width: 150px;
+  height: 100vh;
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  /*background-color: #232323;*/
+  padding: 50px 70px 15px;
+  overflow-y: auto;
+}
+.sidebar::after {
+  content: ''; 
+  height: 70px;
+  display: block;
 }
 
 .option {
@@ -139,12 +165,12 @@ body {
   color: white;
 }
 
-.sidebar {
+/*.sidebar {
   width: 150px;
   overflow-y: scroll;
   top: 0;
   bottom: 0;
-}
+}*/
 
 ::-webkit-scrollbar { -webkit-appearance: none; width: 7px; }
 ::-webkit-scrollbar-thumb { border-radius: 4px; background-color: gray; }
@@ -156,15 +182,34 @@ body {
 
 .customization {
   width: 10%;
+  height: 100vh;
   padding: 120px;
   position: absolute;
   right: 0;
   padding-top: 95px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
+/*.customization {
+  width: 150px;
+  height: 100vh;
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  /*background-color: #232323;*/
+  /*padding: 95px 100px 15px;
+  overflow-y: auto;
+}
+/*.customization::after {
+  content: ''; 
+  height: 50px;
+  display: block;
+}*/
 
 #info-button {
   border-radius: 100%;
-  margin-bottom: 43%;
+  top: 32px;
   margin-left: 57%;
   color: white;
   background: rgb(126, 126, 126);
@@ -307,7 +352,7 @@ body {
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   width: 250px;
-  height: 150px;
+  height: 180px;
   text-align: center;
   z-index: 15;
   position: absolute;
@@ -319,6 +364,9 @@ body {
   cursor: pointer;
   transition: background-color 0.2s ease;
   font-size: 15px;
+}
+.click-item:nth-child(7) {
+  grid-column: 2;
 }
 
 .color {
@@ -432,7 +480,7 @@ body {
   cursor: pointer;
   background-color: #9be4fc;
   border-radius: 3px;
-  border: #9be4fc;
+  border-color: #9be4fc;
   display: flex;
   align-items: center;
   justify-content: center;
