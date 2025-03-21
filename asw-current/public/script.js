@@ -174,6 +174,13 @@ function selectItem(item, e=null) {
     const itemType = item.id.split('-')[0];
     if (!e || !e.shiftKey) {
         selectedItems.forEach(selected => selected.classList.remove('selected-item'));
+        document.querySelectorAll('.dropped-item').forEach(item => {
+            item.classList.remove('selected-item');
+            item.querySelectorAll('.circle, .rectangle, .battery1, .battery2, .rectangle2, .trapezoid, .fur1, .fur2').forEach(part => part.classList.remove('selected-item'));
+            if (item.querySelector('.rotate-circle')) {
+                item.querySelector('.rotate-circle').remove();
+            }
+        });
         selectedItems.clear();
     }
     if (e && e.shiftKey) {
@@ -186,21 +193,21 @@ function selectItem(item, e=null) {
         if (selectedItems.has(item)) {
             selectedItems.delete(item);
             item.classList.remove('selected-item');
+        /*} else {
+            selectedItems.add(item);
+            item.classList.add('selected-item');*/
+            /*item.querySelectorAll('.circle, .rectangle, .battery1, .battery2, .rectangle2, .trapezoid, .fur1, .fur2').forEach(part => {
+                part.classList.remove('selected-item');
+            });
+            if (item.querySelector('.rotate-circle')) {
+                rotateCircle.remove();
+            }
         } else {
             selectedItems.add(item);
             item.classList.add('selected-item');
         }
     } else {
-        //selectedItems.forEach(selected => selected.classList.remove('selected-item'));
-        //selectedItems.clear();
-        /*document.querySelectorAll('.dropped-item').forEach(item => {
-            item.classList.remove('selected-item');
-            item.querySelectorAll('.circle, .rectangle, .battery1, .battery2, .rectangle2, .trapezoid, .fur1, .fur2').forEach(part => part.classList.remove('selected-item'));
-            if (item.querySelector('.rotate-circle')) {
-                item.querySelector('.rotate-circle').remove();
-            }
-        });*/
-        /*selectedItems.add(item);
+        selectedItems.add(item);
         item.classList.add('selected-item');
     }
     selectedItems.forEach(selected => {
@@ -234,7 +241,7 @@ function selectItem(item, e=null) {
         }
     });
     let baseId = item.id;
-    if (baseId.includes('copy')) {
+    if (baseId.includes('CLONED')) {
         baseId = item.id.split('-').slice(0, -2).join('-');
     } else {
         baseId = item.id.split('-').slice(0, -1).join('-');
