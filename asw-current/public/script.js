@@ -43,7 +43,7 @@ function drag(e) {
 }
 function drop(e) {
     e.preventDefault();
-    //saveState(currView);
+    //saveState();
     var data = e.dataTransfer.getData("text");
     const item = document.getElementById(data);
     const dropArea = document.getElementById('jacketbox');
@@ -65,6 +65,7 @@ function drop(e) {
             clonedItem.id = uniqueId;
             clonedItem.className = item.className + ' dropped-item';
             clonedItem.style.cssText = item.style.cssText;
+            //saveState();
             dropArea.appendChild(clonedItem);
             positionItem(clonedItem, e, dropArea);
             selectItem(clonedItem);
@@ -173,7 +174,7 @@ function selectItem(item) {
 function selectItem(item, e=null) {
     const itemType = item.id.split('-')[0];
     if (!e || !e.shiftKey) {
-        selectedItems.forEach(selected => selected.classList.remove('selected-item'));
+        //selectedItems.forEach(selected => selected.classList.remove('selected-item'));
         document.querySelectorAll('.dropped-item').forEach(item => {
             item.classList.remove('selected-item');
             item.querySelectorAll('.circle, .rectangle, .battery1, .battery2, .rectangle2, .trapezoid, .fur1, .fur2').forEach(part => part.classList.remove('selected-item'));
@@ -183,7 +184,7 @@ function selectItem(item, e=null) {
         });
         selectedItems.clear();
     }
-    if (e && e.shiftKey) {
+    if (e && e.shiftKey && selectedItems.has(item)) {//(e && e.shiftKey) {
         if (selectedItems.size > 0) {
             const firstItemType = [...selectedItems][0].id.split('-')[0];
             if (firstItemType !== itemType) {
@@ -1039,29 +1040,65 @@ function duplicate() {
     }
 }
 
-let undoStack = [];
+/*let undoStack = [];
 let redoStack = [];
 function undo() {
     if (undoStack.length > 0) {
         const lastState = undoStack.pop();
-        redoStack.push({...itemSelections[currView][lastState.id]});
-        loadItemSelections(lastState.id);
+        //redoStack.push({...itemSelections[currView][lastState.id]});
+        redoStack.push(lastState);
+        loadState(undoStack[undoStack.length - 1]);
     }
 }
 function redo() {
     if (redoStack.length > 0) {
         const lastState = redoStack.pop();
-        undoStack.push({...itemSelections[currView][lastState.id]});
-        itemSelections[currView][lastState.id] = {...lastState};
-        loadItemSelections(lastState.id);
+        //undoStack.push({...itemSelections[currView][lastState.id]});
+        undoStack.push(lastState);
+        //itemSelections[currView][lastState.id] = {...lastState};
+        loadState(lastState);
     }
 }
-function saveState(view) {
-//WIP
+function saveState() {
+    const dropArea = document.getElementById("jacketbox");
+    const allItems = Array.from(dropArea.querySelectorAll('.dropped-item')).map(item => {
+        return {
+            id: item.id,
+            className: item.className,
+            style: item.style.cssText,
+            html: item.innerHTML,
+            flashingColor: item.getAttribute('data-flashing-color'),
+            speed: item.getAttribute('data-speed'),
+            view: currView,
+            settings: itemSelections[currView] && itemSelections[currView][item.id] && { ...itemSelections[currView][item.id] }
+        };
+    });
+    undoStack.push(allItems);
+    redoStack = [];
 }
 function loadState(state) {
-//WIP
-}
+    const dropArea = document.getElementById("jacketbox");
+    dropArea.querySelectorAll('.dropped-item').forEach(item => item.remove());
+    state.forEach(data => {
+        const newItem = document.createElement("div");
+        newItem.id = data.id;
+        newItem.className = data.className;
+        newItem.style.cssText = data.style;
+        newItem.innerHTML = data.html;
+        newItem.setAttribute('data-flashing-color', data.flashingColor);
+        newItem.setAttribute('data-speed', data.speed);
+        dropArea.appendChild(newItem);
+        if (!itemSelections[data.view]) {
+            itemSelections[data.view] = {};
+        }
+        itemSelections[data.view][data.id] = data.settings;
+        newItem.addEventListener('click', () => selectItem(newItem));
+        if (flashingItems.has(newItem)) {
+            let flashType = data.settings && data.settings.radioSelection ? data.settings.radioSelection.toLowerCase().replace(/\s+/g, '-') : null;
+            flashAnimation(newItem, flashType);
+        }
+    });
+}*/
 
 //delete selected item
 function deleteItem() {
